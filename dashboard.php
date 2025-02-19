@@ -2,21 +2,18 @@
 session_start();
 include 'includes/db.php';
 
-// Verifica se o usuário está logado
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: index.php");
+    header("Location: login.php");
     exit();
 }
 
 $usuario_id = $_SESSION['usuario_id'];
 $usuario_nome = $_SESSION['usuario_nome'];
 
-// Busca os dashboards disponíveis para o usuário logado
 $stmt = $conn->prepare("SELECT id, nome, url FROM dashboards WHERE usuario_id = ?");
 $stmt->bind_param("i", $usuario_id);
 $stmt->execute();
 $result = $stmt->get_result();
-
 ?>
 
 <!DOCTYPE html>
