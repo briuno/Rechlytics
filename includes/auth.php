@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             $_SESSION['usuario_tipo'] = $tipo;
 
             if ($tipo == 'admin') {
-                header("Location: ../admin.php");
+                header("Location: ../admin_dashboard.php");
             } else {
                 header("Location: ../dashboard.php");
             }
