@@ -18,12 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("iss", $usuario_id, $mensagem, $remetente);
     $stmt->execute();
 }
-
-// Buscar mensagens do cliente e do admin
-$stmt = $conn->prepare("SELECT mensagem, remetente, data_envio FROM chat_mensagens WHERE usuario_id = ? ORDER BY data_envio ASC");
-$stmt->bind_param("i", $usuario_id);
-$stmt->execute();
-$result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -31,19 +25,30 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Chat com Suporte - Rechlytics</title>
+    <script>
+        function atualizarMensagens() {
+            fetch('includes/get_mensagens.php')
+                .then(response => response.json())
+                .then(data => {
+                    let chatBox = document.getElementById("chat-box");
+                    chatBox.innerHTML = "";
+
+                    data.forEach(msg => {
+                        chatBox.innerHTML += `<p><strong>${msg.remetente}:</strong> ${msg.mensagem} <small>(${msg.data_envio})</small></p>`;
+                    });
+
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+        }
+
+        setInterval(atualizarMensagens, 5000); // Atualiza a cada 5 segundos
+        window.onload = atualizarMensagens;
+    </script>
 </head>
 <body>
     <h2>Chat com Suporte</h2>
 
-    <div style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <p>
-                <strong><?php echo ($row['remetente'] === 'cliente') ? "Você" : "Suporte"; ?>:</strong>
-                <?php echo htmlspecialchars($row['mensagem']); ?>
-                <small>(<?php echo $row['data_envio']; ?>)</small>
-            </p>
-        <?php endwhile; ?>
-    </div>
+    <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;"></div>
 
     <form action="chat.php" method="POST">
         <label>Mensagem:</label>

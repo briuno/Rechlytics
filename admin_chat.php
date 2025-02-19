@@ -7,29 +7,20 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
     exit();
 }
 
-// Buscar mensagens agrupadas por clientes
+// Buscar clientes que têm mensagens
 $clientes = $conn->query("SELECT DISTINCT usuarios.id, usuarios.nome FROM chat_mensagens 
                           JOIN usuarios ON chat_mensagens.usuario_id = usuarios.id");
 
-$mensagens = [];
+$cliente_id = isset($_GET['cliente_id']) ? $_GET['cliente_id'] : null;
 
-if (isset($_GET['cliente_id'])) {
-    $cliente_id = $_GET['cliente_id'];
+// Enviar resposta
+if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
+    $mensagem = $_POST['mensagem'];
+    $remetente = 'admin';
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $mensagem = $_POST['mensagem'];
-        $remetente = 'admin';
-
-        $stmt = $conn->prepare("INSERT INTO chat_mensagens (usuario_id, mensagem, remetente) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $cliente_id, $mensagem, $remetente);
-        $stmt->execute();
-    }
-
-    // Buscar histórico do chat com o cliente selecionado
-    $stmt = $conn->prepare("SELECT mensagem, remetente, data_envio FROM chat_mensagens WHERE usuario_id = ? ORDER BY data_envio ASC");
-    $stmt->bind_param("i", $cliente_id);
+    $stmt = $conn->prepare("INSERT INTO chat_mensagens (usuario_id, mensagem, remetente) VALUES (?, ?, ?)");
+    $stmt->bind_param("iss", $cliente_id, $mensagem, $remetente);
     $stmt->execute();
-    $mensagens = $stmt->get_result();
 }
 ?>
 
@@ -38,6 +29,28 @@ if (isset($_GET['cliente_id'])) {
 <head>
     <meta charset="UTF-8">
     <title>Gestão de Chat - Rechlytics</title>
+    <script>
+        function atualizarMensagens() {
+            let clienteId = "<?php echo $cliente_id; ?>";
+            if (!clienteId) return;
+
+            fetch('includes/get_mensagens.php?cliente_id=' + clienteId)
+                .then(response => response.json())
+                .then(data => {
+                    let chatBox = document.getElementById("chat-box");
+                    chatBox.innerHTML = "";
+
+                    data.forEach(msg => {
+                        chatBox.innerHTML += `<p><strong>${msg.remetente}:</strong> ${msg.mensagem} <small>(${msg.data_envio})</small></p>`;
+                    });
+
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+        }
+
+        setInterval(atualizarMensagens, 5000); // Atualiza a cada 5 segundos
+        window.onload = atualizarMensagens;
+    </script>
 </head>
 <body>
     <h2>Gestão de Chat</h2>
@@ -49,18 +62,10 @@ if (isset($_GET['cliente_id'])) {
         <?php endwhile; ?>
     </ul>
 
-    <?php if (isset($_GET['cliente_id'])): ?>
+    <?php if ($cliente_id): ?>
         <h3>Histórico de Mensagens</h3>
 
-        <div style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
-            <?php while ($row = $mensagens->fetch_assoc()): ?>
-                <p>
-                    <strong><?php echo ($row['remetente'] === 'cliente') ? "Cliente" : "Suporte"; ?>:</strong>
-                    <?php echo htmlspecialchars($row['mensagem']); ?>
-                    <small>(<?php echo $row['data_envio']; ?>)</small>
-                </p>
-            <?php endwhile; ?>
-        </div>
+        <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;"></div>
 
         <form action="admin_chat.php?cliente_id=<?php echo $cliente_id; ?>" method="POST">
             <label>Mensagem:</label>
