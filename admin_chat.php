@@ -96,3 +96,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     <p><a href="admin_dashboard.php">Voltar</a></p>
 </body>
 </html>
+/;/

@@ -23,7 +23,8 @@ $result = $stmt->get_result();
     <title>Dashboard - Rechlytics</title>
 </head>
 <body>
-    <h2>Bem-vindo, <?php echo htmlspecialchars($usuario_nome); ?>!</h2>
+<h2>Bem-vindo, <?php echo htmlspecialchars($usuario_nome); ?>!</h2>
+<p><a href="perfil.php">Editar Perfil</a></p>
     <h3>Seus Dashboards</h3>
 
     <?php if ($result->num_rows > 0): ?>

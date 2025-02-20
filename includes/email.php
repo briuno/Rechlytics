@@ -15,7 +15,7 @@ function enviarEmail($para, $assunto, $mensagem) {
         $mail->Username = 'suporte@rechlytics.com'; // Seu e-mail SMTP
         $mail->Password = 'Rechlytics2025#'; // Senha do e-mail
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // TLS
-        $mail->Port = 465; // Porta padrão do SMTP
+        $mail->Port = 587; // Porta padrão do SMTP
 
         // Configuração do remetente e destinatário
         $mail->setFrom('suporte@rechlytics.com', 'Rechlytics Suporte');
