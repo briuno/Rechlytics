@@ -8,12 +8,13 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
 }
 
 // Buscar clientes que têm mensagens
-$clientes = $conn->query("SELECT DISTINCT usuarios.id, usuarios.nome FROM chat_mensagens 
+$clientes = $conn->query("SELECT DISTINCT usuarios.id, usuarios.nome, usuarios.email 
+                          FROM chat_mensagens 
                           JOIN usuarios ON chat_mensagens.usuario_id = usuarios.id");
 
 $cliente_id = isset($_GET['cliente_id']) ? $_GET['cliente_id'] : null;
 
-// Enviar resposta
+// Enviar resposta e enviar notificação por e-mail
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     $mensagem = $_POST['mensagem'];
     $remetente = 'admin';
@@ -21,6 +22,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     $stmt = $conn->prepare("INSERT INTO chat_mensagens (usuario_id, mensagem, remetente) VALUES (?, ?, ?)");
     $stmt->bind_param("iss", $cliente_id, $mensagem, $remetente);
     $stmt->execute();
+
+    // Buscar o e-mail do cliente
+    $stmt = $conn->prepare("SELECT email FROM usuarios WHERE id = ?");
+    $stmt->bind_param("i", $cliente_id);
+    $stmt->execute();
+    $stmt->bind_result($email_cliente);
+    $stmt->fetch();
+
+    // Enviar notificação por e-mail
+    $assunto = "Nova resposta no chat - Rechlytics";
+    $mensagem_email = "Olá, você recebeu uma nova resposta no chat do suporte. Acesse o link abaixo para visualizar:\n\nhttps://rechlytics.com/chat.php";
+    $headers = "From: suporte@rechlytics.com\r\n";
+
+    mail($email_cliente, $assunto, $mensagem_email, $headers);
 }
 ?>
 
@@ -48,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
                 });
         }
 
-        setInterval(atualizarMensagens, 5000); // Atualiza a cada 5 segundos
+        setInterval(atualizarMensagens, 5000);
         window.onload = atualizarMensagens;
     </script>
 </head>
