@@ -1,6 +1,8 @@
 <?php
 session_start();
 include 'includes/db.php';
+include 'includes/session_check.php';
+
 
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");

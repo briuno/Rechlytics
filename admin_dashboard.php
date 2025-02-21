@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'includes/session_check_admin.php';
 include 'includes/db.php';
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {

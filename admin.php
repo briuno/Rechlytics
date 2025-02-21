@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'includes/session_check_admin.php';
 include 'includes/db.php';
 
 // Verifica se o usuário é admin
