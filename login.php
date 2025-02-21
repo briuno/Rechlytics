@@ -5,22 +5,9 @@ if (isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-// Mensagens de erro dinâmicas
-$mensagem_erro = "";
-if (isset($_GET['erro'])) {
-    switch ($_GET['erro']) {
-        case 'login':
-            $mensagem_erro = "Usuário ou senha inválidos!";
-            break;
-        case 'nao_ativado':
-            $mensagem_erro = "Conta não ativada. Verifique seu e-mail.";
-            break;
-        case 'bloqueado':
-            $tempo_restante = isset($_GET['tempo']) ? intval($_GET['tempo']) : 900;
-            $mensagem_erro = "Muitas tentativas falhas! Aguarde " . ceil($tempo_restante / 60) . " minutos.";
-            break;
-    }
-}
+// Capturar mensagem de erro da sessão, se existir
+$mensagem_erro = isset($_SESSION['erro_login']) ? $_SESSION['erro_login'] : '';
+unset($_SESSION['erro_login']); // Remover erro após exibição
 ?>
 
 <!DOCTYPE html>
@@ -29,13 +16,18 @@ if (isset($_GET['erro'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Rechlytics</title>
+    <script>
+        // Exibir pop-up de erro se houver mensagem
+        window.onload = function() {
+            var mensagemErro = "<?php echo isset($mensagem_erro) ? addslashes($mensagem_erro) : ''; ?>";
+            if (mensagemErro) {
+                alert(mensagemErro);
+            }
+        };
+    </script>
 </head>
 <body>
     <h2>Login</h2>
-    
-    <?php if (!empty($mensagem_erro)): ?>
-        <p style="color: red;"><?php echo $mensagem_erro; ?></p>
-    <?php endif; ?>
 
     <form action="includes/auth.php" method="POST">
         <label>Email:</label>

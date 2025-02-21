@@ -1,8 +1,8 @@
 <?php
 session_start();
-include 'includes/db.php';
-include 'includes/log.php';
-include 'includes/email.php'; // Inclui a função de envio de e-mail
+include __DIR__ . '/db.php';
+include __DIR__ . '/log.php';
+include __DIR__ . '/email.php';
 
 $limite_tentativas = 5;
 $tempo_bloqueio = 15 * 60; // 15 minutos
@@ -15,7 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     if (isset($_SESSION['tentativas_login'][$email]) && $_SESSION['tentativas_login'][$email]['tentativas'] >= $limite_tentativas) {
         $tempo_restante = $_SESSION['tentativas_login'][$email]['tempo'] + $tempo_bloqueio - time();
         if ($tempo_restante > 0) {
-            header("Location: ../index.php?erro=bloqueado&tempo=$tempo_restante");
+            $_SESSION['erro_login'] = "Muitas tentativas falhas! Aguarde " . ceil($tempo_restante / 60) . " minutos.";
+            header("Location: ../login.php");
             exit();
         } else {
             unset($_SESSION['tentativas_login'][$email]); // Resetar tentativas após o tempo de bloqueio
@@ -35,7 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         // Verificar se a conta foi ativada
         if ($email_verificado == 0) {
             registrarLog($conn, $id, "Tentativa de login com conta não ativada");
-            header("Location: ../index.php?erro=nao_ativado");
+            $_SESSION['erro_login'] = "Conta não ativada. Verifique seu e-mail.";
+            header("Location: ../login.php");
             exit();
         }
 
@@ -47,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             $_SESSION['usuario_nome'] = $nome;
             $_SESSION['usuario_tipo'] = $tipo;
             $_SESSION['last_activity'] = time();
+            unset($_SESSION['erro_login']); // Limpar mensagem de erro se login for bem-sucedido
 
             registrarLog($conn, $id, "Login realizado");
 
@@ -55,9 +58,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             exit();
         } else {
             registrarLog($conn, $id, "Tentativa de login com senha incorreta");
+            $_SESSION['erro_login'] = "Usuário ou senha inválidos!";
         }
     } else {
         registrarLog($conn, null, "Tentativa de login com e-mail não cadastrado: $email");
+        $_SESSION['erro_login'] = "Usuário ou senha inválidos!";
     }
 
     // Contabilizar tentativa de login falha
@@ -70,7 +75,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
     // Enviar e-mail se o usuário atingir o limite de tentativas
     if ($_SESSION['tentativas_login'][$email]['tentativas'] >= $limite_tentativas) {
-        // Buscar e-mail do usuário no banco de dados
         $stmt = $conn->prepare("SELECT email, nome FROM usuarios WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -92,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         }
     }
 
-    header("Location: ../index.php?erro=login");
+    header("Location: ../login.php");
     exit();
 }
 ?>
