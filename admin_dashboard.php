@@ -48,6 +48,7 @@ $result = $stmt->get_result();
 
     <h3>Gerenciamento</h3>
     <p><a href="admin_dashboards.php">Gerenciar Dashboards</a></p>
+    <p><a href="admin_logs.php">Ver Auditoria de Logs</a></p>
     <p><a href="admin_chat.php">Ver Mensagens</a></p>
     <p><a href="logout.php">Sair</a></p>
 </body>
