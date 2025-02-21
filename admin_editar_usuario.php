@@ -18,7 +18,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $usuario_id = $_GET['id'];
 
 // Buscar os dados do usuário
-$stmt = $conn->prepare("SELECT nome, email, tipo FROM usuarios WHERE id = ?");
+$stmt = $conn->prepare("SELECT nome, email, tipo, cpf, empresa, endereco, telefone FROM usuarios WHERE id = ?");
 $stmt->bind_param("i", $usuario_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -34,10 +34,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST['nome']);
     $email = trim($_POST['email']);
     $tipo = trim($_POST['tipo']);
+    $cpf = trim($_POST['cpf']);
+    $empresa = trim($_POST['empresa']);
+    $endereco = trim($_POST['endereco']);
+    $telefone = trim($_POST['telefone']);
 
     // Atualizar os dados do usuário
-    $stmt = $conn->prepare("UPDATE usuarios SET nome = ?, email = ?, tipo = ? WHERE id = ?");
-    $stmt->bind_param("sssi", $nome, $email, $tipo, $usuario_id);
+    $stmt = $conn->prepare("UPDATE usuarios SET nome = ?, email = ?, tipo = ?, cpf = ?, empresa = ?, endereco = ?, telefone = ? WHERE id = ?");
+    $stmt->bind_param("sssssssi", $nome, $email, $tipo, $cpf, $empresa, $endereco, $telefone, $usuario_id);
 
     if ($stmt->execute()) {
         registrarLog($conn, $_SESSION['usuario_id'], "Editou o usuário ID $usuario_id");
@@ -75,6 +79,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <option value="cliente" <?php echo ($usuario['tipo'] === 'cliente') ? 'selected' : ''; ?>>Cliente</option>
             <option value="admin" <?php echo ($usuario['tipo'] === 'admin') ? 'selected' : ''; ?>>Admin</option>
         </select>
+
+        <label>CPF:</label>
+        <input type="text" name="cpf" value="<?php echo htmlspecialchars($usuario['cpf']); ?>" required>
+
+        <label>Empresa:</label>
+        <input type="text" name="empresa" value="<?php echo htmlspecialchars($usuario['empresa']); ?>">
+
+        <label>Endereço:</label>
+        <textarea name="endereco"><?php echo htmlspecialchars($usuario['endereco']); ?></textarea>
+
+        <label>Telefone:</label>
+        <input type="text" name="telefone" value="<?php echo htmlspecialchars($usuario['telefone']); ?>">
 
         <button type="submit">Salvar Alterações</button>
     </form>
