@@ -10,6 +10,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sss", $nome, $email, $senha);
 
     if ($stmt->execute()) {
+        include 'includes/log.php';
+        registrarLog($conn, $usuario_id, "Novo usuário cadastrado");
         header("Location: login.php");
     } else {
         echo "Erro ao cadastrar.";

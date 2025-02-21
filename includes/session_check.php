@@ -15,6 +15,8 @@ if (isset($_SESSION['last_activity'])) {
         // Limpa a sessão e a destrói
         session_unset();
         session_destroy();
+        include 'includes/log.php';
+        registrarLog($conn, $_SESSION['usuario_id'], "Logout realizado");
         // Redireciona para a página de login, opcionalmente indicando que a sessão expirou
         header("Location: login.php?session_expired=1");
         exit();

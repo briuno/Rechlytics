@@ -19,6 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $conn->prepare("INSERT INTO chat_mensagens (usuario_id, mensagem, remetente) VALUES (?, ?, ?)");
     $stmt->bind_param("iss", $usuario_id, $mensagem, $remetente);
     $stmt->execute();
+
+    registrarLog($conn, $_SESSION['usuario_id'], "Enviou mensagem no chat");
 }
 ?>
 

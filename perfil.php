@@ -28,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         $_SESSION['usuario_nome'] = $nome;
         echo "<p style='color: green;'>Perfil atualizado com sucesso!</p>";
+        registrarLog($conn, $_SESSION['usuario_id'], "Atualizou perfil");
     } else {
         echo "<p style='color: red;'>Erro ao atualizar perfil.</p>";
     }

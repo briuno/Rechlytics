@@ -20,7 +20,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             $_SESSION['usuario_nome'] = $nome;
             $_SESSION['usuario_tipo'] = $tipo;
 
-            if ($tipo == 'admin') {
+            include 'log.php';
+            registrarLog($conn, $id, "Login realizado");
+
+              if ($tipo == 'admin') {
                 header("Location: ../admin_dashboard.php");
             } else {
                 header("Location: ../dashboard.php");

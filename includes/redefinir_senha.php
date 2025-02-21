@@ -16,6 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("sss", $token, $expira, $email);
         $stmt->execute();
 
+        include 'includes/log.php';
+        registrarLog($conn, $usuario_id, "Redefiniu a senha");
+
         $link = "https://rechlytics.com/nova_senha.php?token=$token";
         mail($email, "Recuperação de Senha", "Clique no link para redefinir sua senha: $link");
     }

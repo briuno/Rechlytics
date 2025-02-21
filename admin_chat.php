@@ -38,6 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     $stmt->bind_param("iss", $cliente_id, $mensagem, $remetente);
     $stmt->execute();
 
+    registrarLog($conn, $_SESSION['usuario_id'], "Respondeu no chat para o cliente ID: $cliente_id");
+
     // Buscar o e-mail do cliente
     $stmt = $conn->prepare("SELECT email FROM usuarios WHERE id = ?");
     $stmt->bind_param("i", $cliente_id);
