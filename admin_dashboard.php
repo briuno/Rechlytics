@@ -14,7 +14,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
 registrarLog($conn, $_SESSION['usuario_id'], "Acessou o Painel Administrativo");
 
 // Buscar lista de clientes cadastrados
-$stmt = $conn->prepare("SELECT id, nome, email, data_criacao FROM usuarios WHERE tipo = 'cliente' ORDER BY data_criacao DESC");
+$stmt = $conn->prepare("SELECT id, nome, email, tipo, data_criacao FROM usuarios ORDER BY data_criacao DESC");
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -28,20 +28,22 @@ $result = $stmt->get_result();
 </head>
 <body>
     <h2>Painel Administrativo</h2>
-    <h3>Clientes Cadastrados</h3>
+    <h3>Usuários Cadastrados</h3>
 
     <?php if ($result->num_rows > 0): ?>
         <ul>
             <?php while ($row = $result->fetch_assoc()): ?>
                 <li>
                     <strong><?php echo htmlspecialchars($row['nome']); ?></strong> - 
-                    <?php echo htmlspecialchars($row['email']); ?> 
-                    (Cadastrado em: <?php echo date("d/m/Y H:i", strtotime($row['data_criacao'])); ?>)
+                    <?php echo htmlspecialchars($row['email']); ?> - 
+                    <?php echo htmlspecialchars(ucfirst($row['tipo'])); ?>  
+                    (Cadastrado em: <?php echo date("d/m/Y H:i", strtotime($row['data_criacao'])); ?>) 
+                    - <a href="admin_editar_usuario.php?id=<?php echo $row['id']; ?>">Editar</a>
                 </li>
             <?php endwhile; ?>
         </ul>
     <?php else: ?>
-        <p>Nenhum cliente cadastrado.</p>
+        <p>Nenhum usuário cadastrado.</p>
     <?php endif; ?>
 
     <h3>Gerenciamento</h3>
