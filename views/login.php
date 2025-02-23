@@ -29,7 +29,7 @@ unset($_SESSION['erro_login']); // Remover erro após exibição
 <body>
     <h2>Login</h2>
 
-    <form action="/config/auth.php" method="POST">
+    <form action="/controllers/auth.php" method="POST">
         <label>Email:</label>
         <input type="email" name="email" required>
         
