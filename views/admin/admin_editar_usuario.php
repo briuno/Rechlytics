@@ -1,12 +1,12 @@
 <?php
 session_start();
-include 'includes/session_check_admin.php';
-include 'includes/db.php';
-include 'includes/log.php'; // Registro de logs
+include __DIR__ . '/config/session_check_admin.php';
+include __DIR__ . '/config/db.php';
+include __DIR__ . '/config/log.php';
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
@@ -39,6 +39,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $endereco = trim($_POST['endereco']);
     $telefone = trim($_POST['telefone']);
 
+    // Garantir que o tipo de usuário seja válido
+    if (!in_array($tipo, ['cliente', 'admin'])) {
+        die("Tipo de usuário inválido.");
+    }
+
     // Atualizar os dados do usuário
     $stmt = $conn->prepare("UPDATE usuarios SET nome = ?, email = ?, tipo = ?, cpf = ?, empresa = ?, endereco = ?, telefone = ? WHERE id = ?");
     $stmt->bind_param("sssssssi", $nome, $email, $tipo, $cpf, $empresa, $endereco, $telefone, $usuario_id);
@@ -46,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         registrarLog($conn, $_SESSION['usuario_id'], "Editou o usuário ID $usuario_id");
         $_SESSION['msg'] = "Usuário atualizado com sucesso!";
-        header("Location: admin_dashboard.php");
+        header("Location: /admin/admin_dashboard.php");
         exit();
     } else {
         $_SESSION['msg'] = "Erro ao atualizar usuário.";
@@ -67,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p style="color: red;"><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>
     <?php endif; ?>
 
-    <form action="admin_editar_usuario.php?id=<?php echo $usuario_id; ?>" method="POST">
+    <form action="/admin/admin_editar_usuario.php?id=<?php echo $usuario_id; ?>" method="POST">
         <label>Nome:</label>
         <input type="text" name="nome" value="<?php echo htmlspecialchars($usuario['nome']); ?>" required>
 
@@ -95,6 +100,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Salvar Alterações</button>
     </form>
 
-    <p><a href="admin_dashboard.php">Voltar</a></p>
+    <p><a href="/admin/admin_dashboard.php">Voltar</a></p>
 </body>
 </html>

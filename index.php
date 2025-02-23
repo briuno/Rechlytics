@@ -9,7 +9,7 @@
     <h2>Bem-vindo ao Rechlytics</h2>
     <p>Sua plataforma para análise e visualização de dados.</p>
 
-    <a href="/auth/login.php"><button>Entrar</button></a>
-    <a href="/auth/cadastro.php"><button>Cadastrar</button></a>
+    <a href="views/login.php"><button>Entrar</button></a>
+    <a href="views/cadastro.php"><button>Cadastrar</button></a>
 </body>
 </html>

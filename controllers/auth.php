@@ -1,8 +1,8 @@
 <?php
 session_start();
-include dirname(__DIR__) . '/includes/db.php';
-include dirname(__DIR__) . '/includes/log.php';
-include dirname(__DIR__) . '/includes/email.php';
+include __DIR__ . '/../config/db.php';
+include __DIR__ . '/../config/log.php';
+include __DIR__ . '/../config/email.php';
 
 $limite_tentativas = 5;
 $tempo_bloqueio = 15 * 60; // 15 minutos
@@ -10,16 +10,17 @@ $tempo_bloqueio = 15 * 60; // 15 minutos
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     $email = trim($_POST['email']);
     $senha = $_POST['senha'];
+    $ip_usuario = $_SERVER['REMOTE_ADDR']; // Captura o IP do usuário
 
-    // Verificar tentativas de login
+    // Verifica tentativas de login por e-mail e IP
     if (isset($_SESSION['tentativas_login'][$email]) && $_SESSION['tentativas_login'][$email]['tentativas'] >= $limite_tentativas) {
         $tempo_restante = $_SESSION['tentativas_login'][$email]['tempo'] + $tempo_bloqueio - time();
         if ($tempo_restante > 0) {
             $_SESSION['erro_login'] = "Muitas tentativas falhas! Aguarde " . ceil($tempo_restante / 60) . " minutos.";
-            header("Location: ../login.php");
+            header("Location: /auth/login.php");
             exit();
         } else {
-            unset($_SESSION['tentativas_login'][$email]); // Resetar tentativas
+            unset($_SESSION['tentativas_login'][$email]); // Resetar tentativas após o tempo de bloqueio
         }
     }
 
@@ -36,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         // Verificar se a conta foi ativada
         if ($email_verificado == 0) {
             $_SESSION['erro_login'] = "Conta não ativada. Verifique seu e-mail.";
-            header("Location: ../login.php");
+            header("Location: /auth/login.php");
             exit();
         }
 
@@ -53,12 +54,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
             // Enviar e-mail com o código 2FA
             $assunto = "Seu Código 2FA - Rechlytics";
-            $mensagem = "Olá $nome,\n\nSeu código de autenticação é: **$codigo_2fa**\n\nEste código expira em 10 minutos.\n\nSe você não tentou fazer login, ignore este e-mail.";
+            $mensagem = "Olá $nome,\n\n"
+                . "Seu código de autenticação é: **$codigo_2fa**\n\n"
+                . "Este código expira em 10 minutos.\n\n"
+                . "Se você não tentou fazer login, ignore este e-mail.\n\n"
+                . "Atenciosamente,\nEquipe Rechlytics";
+
             enviarEmail($email, $assunto, $mensagem);
 
             // Redirecionar para tela de verificação 2FA
             $_SESSION['usuario_2fa'] = $id;
-            header("Location: ../verificar_2fa.php");
+            header("Location: /auth/verificar_2fa.php");
             exit();
         } else {
             $_SESSION['erro_login'] = "Usuário ou senha inválidos!";
@@ -67,7 +73,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         $_SESSION['erro_login'] = "Usuário ou senha inválidos!";
     }
 
-    header("Location: ../login.php");
+    // Registra tentativa falha
+    if (!isset($_SESSION['tentativas_login'][$email])) {
+        $_SESSION['tentativas_login'][$email] = ["tentativas" => 0, "tempo" => time()];
+    }
+
+    $_SESSION['tentativas_login'][$email]['tentativas']++;
+
+    if ($_SESSION['tentativas_login'][$email]['tentativas'] >= $limite_tentativas) {
+        $_SESSION['tentativas_login'][$email]['tempo'] = time();
+        $_SESSION['erro_login'] = "Muitas tentativas falhas! Tente novamente em 15 minutos.";
+    }
+
+    header("Location: /auth/login.php");
     exit();
 }
 ?>

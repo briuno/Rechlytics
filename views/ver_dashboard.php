@@ -1,16 +1,17 @@
 <?php
 session_start();
-include 'includes/session_check.php';
-include 'includes/db.php';
+include __DIR__ . '/config/session_check.php';
+include __DIR__ . '/config/db.php';
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
 $usuario_id = $_SESSION['usuario_id'];
 $dashboard_id = $_GET['id'] ?? 0;
 
+// Prevenção contra SQL Injection
 $stmt = $conn->prepare("SELECT nome, url FROM dashboards WHERE id = ? AND usuario_id = ?");
 $stmt->bind_param("ii", $dashboard_id, $usuario_id);
 $stmt->execute();
@@ -32,6 +33,6 @@ $row = $result->fetch_assoc();
 <body>
     <h2><?php echo htmlspecialchars($row['nome']); ?></h2>
     <iframe src="<?php echo htmlspecialchars($row['url']); ?>" width="100%" height="600px"></iframe>
-    <p><a href="dashboard.php">Voltar</a></p>
+    <p><a href="/client/dashboard.php">Voltar</a></p>
 </body>
 </html>

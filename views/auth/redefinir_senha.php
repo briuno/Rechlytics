@@ -1,12 +1,12 @@
 <?php
 session_start();
-include 'includes/db.php';
+include __DIR__ . '/config/db.php';
 
-if (!isset($_GET['token'])) {
+if (!isset($_GET['token']) || empty($_GET['token'])) {
     die("Token inválido.");
 }
 
-$token = $_GET['token'];
+$token = htmlspecialchars($_GET['token'], ENT_QUOTES, 'UTF-8');
 
 // Verificar se o token existe e ainda é válido
 $stmt = $conn->prepare("SELECT id FROM usuarios WHERE reset_token = ? AND reset_token_expira > NOW()");
@@ -20,14 +20,19 @@ if ($stmt->num_rows == 0) {
 
 $stmt->bind_result($usuario_id);
 $stmt->fetch();
+$stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nova_senha = $_POST['senha'];
-    $confirma_senha = $_POST['confirma_senha'];
+    $nova_senha = trim($_POST['senha']);
+    $confirma_senha = trim($_POST['confirma_senha']);
 
+    // Verificar se as senhas coincidem
     if ($nova_senha !== $confirma_senha) {
         $_SESSION['msg'] = "As senhas não coincidem!";
+    } elseif (strlen($nova_senha) < 8) {
+        $_SESSION['msg'] = "A senha deve ter pelo menos 8 caracteres!";
     } else {
+        // Criar hash seguro da senha
         $senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
 
         // Atualizar a senha e remover o token
@@ -36,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute();
 
         $_SESSION['msg'] = "Senha redefinida com sucesso! Faça login.";
-        header("Location: login.php");
+        header("Location: /auth/login.php");
         exit();
     }
 }
@@ -56,15 +61,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset($_SESSION['msg']);
     }
     ?>
-    <form action="redefinir_senha.php?token=<?php echo htmlspecialchars($token); ?>" method="POST">
+    <form action="/auth/redefinir_senha.php?token=<?php echo htmlspecialchars($token); ?>" method="POST">
         <label>Nova Senha:</label>
-        <input type="password" name="senha" required>
+        <input type="password" name="senha" required minlength="8">
         
         <label>Confirme a Senha:</label>
-        <input type="password" name="confirma_senha" required>
+        <input type="password" name="confirma_senha" required minlength="8">
 
         <button type="submit">Redefinir Senha</button>
     </form>
-    <p><a href="login.php">Voltar ao Login</a></p>
+    <p><a href="/auth/login.php">Voltar ao Login</a></p>
 </body>
 </html>

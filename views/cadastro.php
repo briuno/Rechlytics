@@ -1,7 +1,8 @@
 <?php
 session_start();
-include 'includes/db.php';
-include 'includes/log.php'; // Para registrar o cadastro
+include __DIR__ . '/config/db.php';
+include __DIR__ . '/config/log.php'; // Para registrar o cadastro
+include __DIR__ . '/config/email.php'; // Para enviar e-mail de ativação
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST['nome']);
@@ -13,33 +14,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $endereco = trim($_POST['endereco']);
     $empresa = trim($_POST['empresa']);
 
+    // Prevenir XSS
+    $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
+    $email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+    $cpf = htmlspecialchars($cpf, ENT_QUOTES, 'UTF-8');
+    $telefone = htmlspecialchars($telefone, ENT_QUOTES, 'UTF-8');
+    $endereco = htmlspecialchars($endereco, ENT_QUOTES, 'UTF-8');
+    $empresa = htmlspecialchars($empresa, ENT_QUOTES, 'UTF-8');
+
     // Verificar se as senhas coincidem
     if ($senha !== $confirma_senha) {
-        echo "<p style='color: red;'>As senhas não coincidem.</p>";
+        echo "<p>As senhas não coincidem.</p>";
         exit();
     }
 
     // Verificar se o e-mail já está cadastrado
-    $stmt = $conn->prepare("SELECT id FROM usuarios WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    $stmt = $conn->prepare("SELECT id FROM usuarios WHERE email = ? OR cpf = ?");
+    $stmt->bind_param("ss", $email, $cpf);
     $stmt->execute();
     $stmt->store_result();
+    
     if ($stmt->num_rows > 0) {
-        echo "<p style='color: red;'>Este e-mail já está cadastrado.</p>";
+        echo "<p>Este e-mail ou CPF já está cadastrado.</p>";
         exit();
     }
 
-    // Verificar se o CPF já está cadastrado
-    $stmt = $conn->prepare("SELECT id FROM usuarios WHERE cpf = ?");
-    $stmt->bind_param("s", $cpf);
-    $stmt->execute();
-    $stmt->store_result();
-    if ($stmt->num_rows > 0) {
-        echo "<p style='color: red;'>Este CPF já está cadastrado.</p>";
-        exit();
-    }
-
-    // Hash seguro da senha
+    // Criar hash seguro da senha
     $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
     // Cadastrar usuário
@@ -51,15 +51,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $usuario_id = $stmt->insert_id;
         registrarLog($conn, $usuario_id, "Novo usuário cadastrado");
 
-        // Enviar e-mail de ativação (opcional)
-        include 'includes/email.php';
+        // Enviar e-mail de ativação
         $token = bin2hex(random_bytes(16)); // Token seguro
-        $ativacao_link = "https://rechlytics.com/ativar_conta.php?email=$email&token=$token";
+        $ativacao_link = "https://rechlytics.com/auth/ativar_conta.php?email=$email&token=$token";
         enviarEmail($email, "Confirme seu cadastro", "Clique no link para ativar sua conta: $ativacao_link");
 
-        echo "<p style='color: green;'>Cadastro realizado com sucesso! Verifique seu e-mail para ativar sua conta.</p>";
+        echo "<p>Cadastro realizado com sucesso! Verifique seu e-mail para ativar sua conta.</p>";
     } else {
-        echo "<p style='color: red;'>Erro ao cadastrar usuário.</p>";
+        echo "<p>Erro ao cadastrar usuário.</p>";
     }
 }
 ?>
@@ -97,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <h2>Cadastro de Usuário</h2>
-    <form action="cadastro.php" method="POST" onsubmit="return validarFormulario()">
+    <form action="/auth/cadastro.php" method="POST" onsubmit="return validarFormulario()">
         <label>Nome:</label>
         <input type="text" name="nome" required>
         
@@ -124,6 +123,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit">Cadastrar</button>
     </form>
-    <p><a href="login.php">Já tem uma conta? Faça login</a></p>
+    <p><a href="/auth/login.php">Já tem uma conta? Faça login</a></p>
 </body>
 </html>

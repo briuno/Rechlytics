@@ -1,11 +1,11 @@
 <?php
 session_start();
-include 'includes/session_check_admin.php';
-include 'includes/db.php';
+include __DIR__ . '/config/session_check_admin.php';
+include __DIR__ . '/config/db.php';
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
@@ -39,7 +39,7 @@ $result = $stmt->get_result();
             </tr>
             <?php while ($row = $result->fetch_assoc()): ?>
                 <tr>
-                    <td><?php echo $row['id']; ?></td>
+                    <td><?php echo htmlspecialchars($row['id']); ?></td>
                     <td><?php echo htmlspecialchars($row['usuario'] ?? 'Sistema'); ?></td>
                     <td><?php echo htmlspecialchars($row['acao']); ?></td>
                     <td><?php echo date("d/m/Y H:i", strtotime($row['data'])); ?></td>
@@ -50,6 +50,6 @@ $result = $stmt->get_result();
         <p>Nenhuma ação registrada no sistema.</p>
     <?php endif; ?>
 
-    <p><a href="admin_dashboard.php">Voltar ao Painel</a></p>
+    <p><a href="/admin/admin_dashboard.php">Voltar ao Painel</a></p>
 </body>
 </html>

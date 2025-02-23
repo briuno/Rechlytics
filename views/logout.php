@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'includes/db.php'; // Garante que a conexão com o banco está disponível
-include 'includes/log.php'; // Garante que o sistema de logs está disponível
+include __DIR__ . '/config/db.php'; // Garante a conexão com o banco
+include __DIR__ . '/config/log.php'; // Garante o sistema de logs
 
 // Registrar log de logout
 if (isset($_SESSION['usuario_id'])) {
@@ -12,6 +12,7 @@ if (isset($_SESSION['usuario_id'])) {
 session_unset();
 session_destroy();
 
-header("Location: index.php");
+// Redirecionar para a página inicial
+header("Location: /index.php");
 exit();
 ?>

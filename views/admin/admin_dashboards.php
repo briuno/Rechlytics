@@ -1,20 +1,20 @@
 <?php
 session_start();
-include 'includes/session_check_admin.php';
-include 'includes/db.php';
-include 'includes/log.php'; // Inclui o sistema de logs
+include __DIR__ . '/config/session_check_admin.php';
+include __DIR__ . '/config/db.php';
+include __DIR__ . '/config/log.php';
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
 // Criar ou atualizar dashboards
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salvar'])) {
     $usuario_id = $_POST['usuario_id'];
-    $nome = $_POST['nome'];
-    $url = $_POST['url'];
+    $nome = trim($_POST['nome']);
+    $url = trim($_POST['url']);
 
     if (isset($_POST['dashboard_id']) && $_POST['dashboard_id'] != '') {
         // Atualizar dashboard existente
@@ -49,7 +49,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir'])) {
 }
 
 // Buscar dashboards existentes
-$result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, usuarios.nome AS cliente FROM dashboards 
+$result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, usuarios.id AS usuario_id, usuarios.nome AS cliente 
+                        FROM dashboards 
                         JOIN usuarios ON dashboards.usuario_id = usuarios.id");
 ?>
 
@@ -62,7 +63,7 @@ $result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, u
 <body>
     <h2>Gerenciar Dashboards</h2>
 
-    <form action="admin_dashboards.php" method="POST">
+    <form action="/admin/admin_dashboards.php" method="POST">
         <input type="hidden" name="dashboard_id" id="dashboard_id">
         <label>ID do Cliente:</label>
         <input type="number" name="usuario_id" id="usuario_id" required>
@@ -80,8 +81,8 @@ $result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, u
                 <strong><?php echo htmlspecialchars($row['nome']); ?></strong> - Cliente: <?php echo htmlspecialchars($row['cliente']); ?>
                 <br> <a href="<?php echo htmlspecialchars($row['url']); ?>" target="_blank">Ver Dashboard</a>
                 <br>
-                <button onclick="editarDashboard('<?php echo $row['id']; ?>', '<?php echo $row['cliente']; ?>', '<?php echo $row['nome']; ?>', '<?php echo $row['url']; ?>')">Editar</button>
-                <form action="admin_dashboards.php" method="POST" style="display:inline;">
+                <button onclick="editarDashboard('<?php echo $row['id']; ?>', '<?php echo $row['usuario_id']; ?>', '<?php echo htmlspecialchars($row['nome']); ?>', '<?php echo htmlspecialchars($row['url']); ?>')">Editar</button>
+                <form action="/admin/admin_dashboards.php" method="POST" style="display:inline;">
                     <input type="hidden" name="dashboard_id" value="<?php echo $row['id']; ?>">
                     <button type="submit" name="excluir" onclick="return confirm('Tem certeza que deseja excluir este dashboard?');">Excluir</button>
                 </form>
@@ -90,14 +91,14 @@ $result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, u
     </ul>
 
     <script>
-        function editarDashboard(id, usuario, nome, url) {
+        function editarDashboard(id, usuarioId, nome, url) {
             document.getElementById('dashboard_id').value = id;
-            document.getElementById('usuario_id').value = usuario;
+            document.getElementById('usuario_id').value = usuarioId;
             document.getElementById('nome').value = nome;
             document.getElementById('url').value = url;
         }
     </script>
 
-    <p><a href="admin_dashboard.php">Voltar</a></p>
+    <p><a href="/admin/admin_dashboard.php">Voltar</a></p>
 </body>
 </html>

@@ -4,12 +4,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 session_start();
-include 'includes/session_check_admin.php';
-include 'includes/db.php';
-include 'includes/email.php'; // Inclui o sistema de e-mail
+include __DIR__ . '/config/session_check_admin.php';
+include __DIR__ . '/config/db.php';
+include __DIR__ . '/config/email.php'; // Inclui o sistema de e-mail
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
@@ -18,7 +18,7 @@ $clientes = $conn->query("SELECT DISTINCT usuarios.id, usuarios.nome, usuarios.e
                           FROM chat_mensagens 
                           JOIN usuarios ON chat_mensagens.usuario_id = usuarios.id");
 
-$cliente_id = isset($_GET['cliente_id']) ? $_GET['cliente_id'] : null;
+$cliente_id = isset($_GET['cliente_id']) ? intval($_GET['cliente_id']) : null;
 
 // Buscar mensagens do cliente selecionado
 $mensagens = [];
@@ -31,7 +31,7 @@ if ($cliente_id) {
 
 // Enviar resposta e enviar notificação por e-mail
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
-    $mensagem = $_POST['mensagem'];
+    $mensagem = trim($_POST['mensagem']);
     $remetente = 'admin';
 
     $stmt = $conn->prepare("INSERT INTO chat_mensagens (usuario_id, mensagem, remetente) VALUES (?, ?, ?)");
@@ -46,14 +46,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     $stmt->execute();
     $stmt->bind_result($email_cliente);
     $stmt->fetch();
+    $stmt->close();
 
-    // Enviar notificação por e-mail
-    $assunto = "Nova resposta no chat - Rechlytics";
-    $mensagem_email = "Olá, você recebeu uma nova resposta no chat do suporte. Acesse o link abaixo para visualizar:\n\nhttps://rechlytics.com/chat.php";
+    if (!empty($email_cliente)) {
+        // Enviar notificação por e-mail
+        $assunto = "Nova resposta no chat - Rechlytics";
+        $mensagem_email = "Olá, você recebeu uma nova resposta no chat do suporte. Acesse o link abaixo para visualizar:\n\nhttps://rechlytics.com/client/chat.php";
 
-    enviarEmail($email_cliente, $assunto, $mensagem_email);
+        enviarEmail($email_cliente, $assunto, $mensagem_email);
+    }
 
-    echo "<script>window.location.href='admin_chat.php?cliente_id=$cliente_id';</script>";
+    echo "<script>window.location.href='/admin/admin_chat.php?cliente_id=$cliente_id';</script>";
     exit();
 }
 ?>
@@ -70,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     <h3>Selecionar Cliente:</h3>
     <ul>
         <?php while ($cliente = $clientes->fetch_assoc()): ?>
-            <li><a href="admin_chat.php?cliente_id=<?php echo $cliente['id']; ?>"><?php echo htmlspecialchars($cliente['nome']); ?></a></li>
+            <li><a href="/admin/admin_chat.php?cliente_id=<?php echo $cliente['id']; ?>"><?php echo htmlspecialchars($cliente['nome']); ?></a></li>
         <?php endwhile; ?>
     </ul>
 
@@ -82,12 +85,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
                 <p>
                     <strong><?php echo ($row['remetente'] === 'cliente') ? "Cliente" : "Suporte"; ?>:</strong>
                     <?php echo htmlspecialchars($row['mensagem']); ?>
-                    <small>(<?php echo $row['data_envio']; ?>)</small>
+                    <small>(<?php echo date("d/m/Y H:i", strtotime($row['data_envio'])); ?>)</small>
                 </p>
             <?php endwhile; ?>
         </div>
 
-        <form action="admin_chat.php?cliente_id=<?php echo $cliente_id; ?>" method="POST">
+        <form action="/admin/admin_chat.php?cliente_id=<?php echo $cliente_id; ?>" method="POST">
             <label>Mensagem:</label>
             <textarea name="mensagem" required></textarea>
             <button type="submit">Responder</button>
@@ -96,7 +99,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
         <p>Selecione um cliente para visualizar o chat.</p>
     <?php endif; ?>
 
-    <p><a href="admin_dashboard.php">Voltar</a></p>
+    <p><a href="/admin/admin_dashboard.php">Voltar</a></p>
 </body>
 </html>
-/;/

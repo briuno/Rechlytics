@@ -1,12 +1,11 @@
 <?php
 session_start();
-include 'includes/db.php';
-include 'includes/session_check.php';
-include 'includes/log.php'; 
-
+include __DIR__ . '/config/db.php';
+include __DIR__ . '/config/session_check.php';
+include __DIR__ . '/config/log.php';
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
@@ -14,14 +13,17 @@ $usuario_id = $_SESSION['usuario_id'];
 
 // Enviar nova mensagem
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $mensagem = $_POST['mensagem'];
+    $mensagem = trim($_POST['mensagem']);
+    $mensagem = htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8'); // Evita XSS
     $remetente = 'cliente';
 
-    $stmt = $conn->prepare("INSERT INTO chat_mensagens (usuario_id, mensagem, remetente) VALUES (?, ?, ?)");
-    $stmt->bind_param("iss", $usuario_id, $mensagem, $remetente);
-    $stmt->execute();
+    if (!empty($mensagem)) {
+        $stmt = $conn->prepare("INSERT INTO chat_mensagens (usuario_id, mensagem, remetente) VALUES (?, ?, ?)");
+        $stmt->bind_param("iss", $usuario_id, $mensagem, $remetente);
+        $stmt->execute();
 
-    registrarLog($conn, $_SESSION['usuario_id'], "Enviou mensagem no chat");
+        registrarLog($conn, $_SESSION['usuario_id'], "Enviou mensagem no chat");
+    }
 }
 ?>
 
@@ -32,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Chat com Suporte - Rechlytics</title>
     <script>
         function atualizarMensagens() {
-            fetch('includes/get_mensagens.php')
+            fetch('/client/get_mensagens.php')
                 .then(response => response.json())
                 .then(data => {
                     let chatBox = document.getElementById("chat-box");
@@ -55,12 +57,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;"></div>
 
-    <form action="chat.php" method="POST">
+    <form action="/client/chat.php" method="POST">
         <label>Mensagem:</label>
         <textarea name="mensagem" required></textarea>
         <button type="submit">Enviar</button>
     </form>
 
-    <p><a href="dashboard.php">Voltar</a></p>
+    <p><a href="/client/dashboard.php">Voltar</a></p>
 </body>
 </html>

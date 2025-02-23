@@ -21,12 +21,17 @@ function enviarEmail($para, $assunto, $mensagem) {
         $mail->setFrom('suporte@rechlytics.com', 'Rechlytics Suporte');
         $mail->addAddress($para);
         $mail->Subject = $assunto;
+
+        // Configuração do corpo do e-mail
+        $mail->isHTML(false);
         $mail->Body = $mensagem;
+        $mail->AltBody = strip_tags($mensagem); // Fallback para clientes que não suportam HTML
 
         // Enviar e-mail
         $mail->send();
         return true;
     } catch (Exception $e) {
+        error_log("Erro ao enviar e-mail para $para: " . $mail->ErrorInfo);
         return false;
     }
 }

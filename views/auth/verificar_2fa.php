@@ -1,10 +1,10 @@
 <?php
 session_start();
-include 'includes/db.php';
-include 'includes/log.php';
+include __DIR__ . '/config/db.php';
+include __DIR__ . '/config/log.php';
 
 if (!isset($_SESSION['usuario_2fa'])) {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_result($codigo_armazenado, $expira);
     $stmt->fetch();
 
-    if ($codigo_digitado == $codigo_armazenado && strtotime($expira) > time()) {
+    if ($stmt->num_rows > 0 && $codigo_digitado === $codigo_armazenado && strtotime($expira) > time()) {
         // Autenticação concluída
         $_SESSION['usuario_id'] = $usuario_id;
         unset($_SESSION['usuario_2fa']);
@@ -31,8 +31,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("i", $usuario_id);
         $stmt->execute();
 
+        registrarLog($conn, $usuario_id, "Autenticação 2FA bem-sucedida");
+
         // Redirecionar ao painel
-        header("Location: dashboard.php");
+        header("Location: /client/dashboard.php");
         exit();
     } else {
         $_SESSION['erro_2fa'] = "Código inválido ou expirado!";
@@ -53,12 +55,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p style="color: red;"><?php echo $_SESSION['erro_2fa']; unset($_SESSION['erro_2fa']); ?></p>
     <?php endif; ?>
 
-    <form action="verificar_2fa.php" method="POST">
+    <form action="/auth/verificar_2fa.php" method="POST">
         <label>Digite o código recebido por e-mail:</label>
         <input type="text" name="codigo" required>
         <button type="submit">Confirmar</button>
     </form>
 
-    <p><a href="login.php">Voltar</a></p>
+    <p><a href="/auth/login.php">Voltar</a></p>
 </body>
 </html>

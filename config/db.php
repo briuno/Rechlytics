@@ -1,11 +1,18 @@
 <?php
+// Configurações do banco de dados
 $servername = "193.203.175.215";
 $username = "u332555040_rechlytics_use";
 $password = "Fo27&ofDS~";
 $dbname = "u332555040_rechlytics_db";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Erro na conexão: " . $conn->connect_error);
+// Ativar relatório de erros para MySQLi
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+try {
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn->set_charset("utf8mb4"); // Garante suporte a caracteres especiais
+} catch (Exception $e) {
+    error_log("Erro na conexão com o banco de dados: " . $e->getMessage());
+    die("Erro ao conectar ao banco de dados. Tente novamente mais tarde.");
 }
 ?>

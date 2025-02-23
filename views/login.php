@@ -1,7 +1,7 @@
 <?php 
 session_start();
 if (isset($_SESSION['usuario_id'])) {
-    header("Location: " . ($_SESSION['usuario_tipo'] == 'admin' ? "admin_dashboard.php" : "dashboard.php"));
+    header("Location: " . ($_SESSION['usuario_tipo'] == 'admin' ? "/admin/admin_dashboard.php" : "/client/dashboard.php"));
     exit();
 }
 
@@ -29,7 +29,7 @@ unset($_SESSION['erro_login']); // Remover erro após exibição
 <body>
     <h2>Login</h2>
 
-    <form action="includes/auth.php" method="POST">
+    <form action="/config/auth.php" method="POST">
         <label>Email:</label>
         <input type="email" name="email" required>
         
@@ -39,6 +39,6 @@ unset($_SESSION['erro_login']); // Remover erro após exibição
         <button type="submit" name="login">Entrar</button>
     </form>
 
-    <p><a href="esq_senha.php">Esqueci minha senha</a></p>
+    <p><a href="/auth/esq_senha.php">Esqueci minha senha</a></p>
 </body>
 </html>

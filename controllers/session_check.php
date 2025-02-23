@@ -5,20 +5,28 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Define o tempo limite de inatividade (em segundos)
-// Exemplo: 1800 segundos = 30 minutos
 $timeout_duration = 1800;
 
 // Verifica se a variável de última atividade existe
 if (isset($_SESSION['last_activity'])) {
     // Se a diferença entre o tempo atual e a última atividade for maior que o tempo limite
     if ((time() - $_SESSION['last_activity']) > $timeout_duration) {
-        // Limpa a sessão e a destrói
+        include __DIR__ . '/config/log.php';
+
+        // Armazena o ID do usuário antes de destruir a sessão
+        $usuario_id = $_SESSION['usuario_id'] ?? null;
+
+        // Limpa e destrói a sessão
         session_unset();
         session_destroy();
-        include 'includes/log.php';
-        registrarLog($conn, $_SESSION['usuario_id'], "Logout realizado");
-        // Redireciona para a página de login, opcionalmente indicando que a sessão expirou
-        header("Location: login.php?session_expired=1");
+
+        // Registra o logout no log se o usuário ainda estava autenticado
+        if ($usuario_id) {
+            registrarLog($conn, $usuario_id, "Logout realizado por inatividade");
+        }
+
+        // Redireciona para a página de login indicando que a sessão expirou
+        header("Location: /auth/login.php?session_expired=1");
         exit();
     }
 }

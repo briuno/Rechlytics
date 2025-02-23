@@ -1,11 +1,11 @@
 <?php
 session_start();
-include 'includes/session_check.php';
-include 'includes/db.php';
+include __DIR__ . '/config/session_check.php';
+include __DIR__ . '/config/db.php';
 
 // Verifica se o usuário está logado
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
@@ -31,7 +31,7 @@ $result = $stmt->get_result();
 </head>
 <body>
     <h2>Bem-vindo, <?php echo $usuario_nome; ?>!</h2>
-    <p><a href="perfil.php">Editar Perfil</a></p>
+    <p><a href="/client/perfil.php">Editar Perfil</a></p>
 
     <h3>Seus Dashboards</h3>
 
@@ -39,7 +39,7 @@ $result = $stmt->get_result();
         <ul>
             <?php while ($row = $result->fetch_assoc()): ?>
                 <li>
-                    <a href="ver_dashboard.php?id=<?php echo htmlspecialchars($row['id']); ?>">
+                    <a href="/client/ver_dashboard.php?id=<?php echo htmlspecialchars($row['id']); ?>">
                         <?php echo htmlspecialchars($row['nome']); ?>
                     </a>
                 </li>
@@ -49,8 +49,7 @@ $result = $stmt->get_result();
         <p>Nenhum dashboard disponível.</p>
     <?php endif; ?>
 
-    <p><a href="chat.php">Falar com Suporte</a></p>
-    <p><a href="logout.php">Sair</a></p>
+    <p><a href="/client/chat.php">Falar com Suporte</a></p>
+    <p><a href="/client/logout.php">Sair</a></p>
 </body>
 </html>
-

@@ -1,12 +1,12 @@
 <?php
 session_start();
-include 'includes/session_check_admin.php';
-include 'includes/db.php';
-include 'includes/log.php'; // Registro de logs
+include __DIR__ . '/config/session_check_admin.php';
+include __DIR__ . '/config/db.php';
+include __DIR__ . '/config/log.php';
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: login.php");
+    header("Location: /auth/login.php");
     exit();
 }
 
@@ -38,7 +38,7 @@ $result = $stmt->get_result();
                     <?php echo htmlspecialchars($row['email']); ?> - 
                     <?php echo htmlspecialchars(ucfirst($row['tipo'])); ?>  
                     (Cadastrado em: <?php echo date("d/m/Y H:i", strtotime($row['data_criacao'])); ?>) 
-                    - <a href="admin_editar_usuario.php?id=<?php echo $row['id']; ?>">Editar</a>
+                    - <a href="/admin/admin_editar_usuario.php?id=<?php echo $row['id']; ?>">Editar</a>
                 </li>
             <?php endwhile; ?>
         </ul>
@@ -47,9 +47,9 @@ $result = $stmt->get_result();
     <?php endif; ?>
 
     <h3>Gerenciamento</h3>
-    <p><a href="admin_dashboards.php">Gerenciar Dashboards</a></p>
-    <p><a href="admin_logs.php">Ver Auditoria de Logs</a></p>
-    <p><a href="admin_chat.php">Ver Mensagens</a></p>
-    <p><a href="logout.php">Sair</a></p>
+    <p><a href="/admin/admin_dashboards.php">Gerenciar Dashboards</a></p>
+    <p><a href="/admin/admin_logs.php">Ver Auditoria de Logs</a></p>
+    <p><a href="/admin/admin_chat.php">Ver Mensagens</a></p>
+    <p><a href="/admin/logout.php">Sair</a></p>
 </body>
 </html>
