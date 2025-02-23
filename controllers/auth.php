@@ -1,8 +1,8 @@
 <?php
 session_start();
-include 'includes/db.php';
-include 'includes/log.php';
-include 'includes/email.php';
+include dirname(__DIR__) . '/includes/db.php';
+include dirname(__DIR__) . '/includes/log.php';
+include dirname(__DIR__) . '/includes/email.php';
 
 $limite_tentativas = 5;
 $tempo_bloqueio = 15 * 60; // 15 minutos

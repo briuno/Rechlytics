@@ -3,14 +3,20 @@ session_start();
 include 'includes/session_check.php';
 include 'includes/db.php';
 
+// Verifica se o usuário está logado
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
     exit();
 }
 
+// Pega o nome do usuário da sessão, se existir
 $usuario_id = $_SESSION['usuario_id'];
-$usuario_nome = $_SESSION['usuario_nome'];
+$usuario_nome = isset($_SESSION['usuario_nome']) ? $_SESSION['usuario_nome'] : "Usuário";
 
+// Evita erro de NULL no htmlspecialchars()
+$usuario_nome = htmlspecialchars($usuario_nome, ENT_QUOTES, 'UTF-8');
+
+// Buscar os dashboards do usuário
 $stmt = $conn->prepare("SELECT id, nome, url FROM dashboards WHERE usuario_id = ?");
 $stmt->bind_param("i", $usuario_id);
 $stmt->execute();
@@ -24,15 +30,16 @@ $result = $stmt->get_result();
     <title>Dashboard - Rechlytics</title>
 </head>
 <body>
-<h2>Bem-vindo, <?php echo htmlspecialchars($usuario_nome); ?>!</h2>
-<p><a href="perfil.php">Editar Perfil</a></p>
+    <h2>Bem-vindo, <?php echo $usuario_nome; ?>!</h2>
+    <p><a href="perfil.php">Editar Perfil</a></p>
+
     <h3>Seus Dashboards</h3>
 
     <?php if ($result->num_rows > 0): ?>
         <ul>
             <?php while ($row = $result->fetch_assoc()): ?>
                 <li>
-                    <a href="ver_dashboard.php?id=<?php echo $row['id']; ?>">
+                    <a href="ver_dashboard.php?id=<?php echo htmlspecialchars($row['id']); ?>">
                         <?php echo htmlspecialchars($row['nome']); ?>
                     </a>
                 </li>
@@ -46,3 +53,4 @@ $result = $stmt->get_result();
     <p><a href="logout.php">Sair</a></p>
 </body>
 </html>
+
