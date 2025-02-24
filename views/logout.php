@@ -13,6 +13,6 @@ session_unset();
 session_destroy();
 
 // Redirecionar para a página inicial
-header("Location: /rechlytics/index.php");
+header("Location: index.php");
 exit();
 ?>

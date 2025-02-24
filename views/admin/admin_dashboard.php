@@ -6,7 +6,7 @@ include __DIR__ . '/../../controllers/log.php'; // Caminho correto
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: /rechlytics/views/login.php");
+    header("Location: views/login.php");
     exit();
 }
 
@@ -38,7 +38,7 @@ $result = $stmt->get_result();
                     <?php echo htmlspecialchars($row['email']); ?> - 
                     <?php echo htmlspecialchars(ucfirst($row['tipo'])); ?>  
                     (Cadastrado em: <?php echo date("d/m/Y H:i", strtotime($row['data_criacao'])); ?>) 
-                    - <a href="/rechlytics/views/admin/admin_editar_usuario.php?id=<?php echo $row['id']; ?>">Editar</a>
+                    - <a href="views/admin/admin_editar_usuario.php?id=<?php echo $row['id']; ?>">Editar</a>
                 </li>
             <?php endwhile; ?>
         </ul>
@@ -47,9 +47,9 @@ $result = $stmt->get_result();
     <?php endif; ?>
 
     <h3>Gerenciamento</h3>
-    <p><a href="/rechlytics/views/admin/admin_dashboards.php">Gerenciar Dashboards</a></p>
-    <p><a href="/rechlytics/views/admin/admin_logs.php">Ver Auditoria de Logs</a></p>
-    <p><a href="/rechlytics/views/admin/admin_chat.php">Ver Mensagens</a></p>
-    <p><a href="/rechlytics/views/logout.php">Sair</a></p>
+    <p><a href="views/admin/admin_dashboards.php">Gerenciar Dashboards</a></p>
+    <p><a href="views/admin/admin_logs.php">Ver Auditoria de Logs</a></p>
+    <p><a href="views/admin/admin_chat.php">Ver Mensagens</a></p>
+    <p><a href="views/logout.php">Sair</a></p>
 </body>
 </html>

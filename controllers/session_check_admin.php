@@ -13,7 +13,7 @@ include __DIR__ . '/../controllers/log.php';
 
 // Verifica se o usuário está logado e se é administrador
 if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['usuario_tipo']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: /rechlytics/views/login.php?acesso=negado");
+    header("Location: /views/login.php?acesso=negado");
     exit();
 }
 
@@ -30,7 +30,7 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) >
         registrarLog($conn, $usuario_id, "Logout automático por inatividade - Admin");
     }
 
-    header("Location: /rechlytics/views/login.php?session_expired=1");
+    header("Location: /views/login.php?session_expired=1");
     exit();
 }
 

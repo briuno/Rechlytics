@@ -10,7 +10,7 @@ include __DIR__ . '/../../controllers/log.php'; // Adicionado corretamente
 include __DIR__ . '/../../controllers/email.php'; // Inclui o sistema de e-mail
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: /rechlytics/views/login.php");
+    header("Location: views/login.php");
     exit();
 }
 
@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
         enviarEmail($email_cliente, $assunto, $mensagem_email);
     }
 
-    echo "<script>window.location.href='/rechlytics/views/admin/admin_chat.php?cliente_id=$cliente_id';</script>";
+    echo "<script>window.location.href='views/admin/admin_chat.php?cliente_id=$cliente_id';</script>";
     exit();
 }
 ?>
@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     <h3>Selecionar Cliente:</h3>
     <ul>
         <?php while ($cliente = $clientes->fetch_assoc()): ?>
-            <li><a href="/rechlytics/views/admin/admin_chat.php?cliente_id=<?php echo $cliente['id']; ?>"><?php echo htmlspecialchars($cliente['nome']); ?></a></li>
+            <li><a href="views/admin/admin_chat.php?cliente_id=<?php echo $cliente['id']; ?>"><?php echo htmlspecialchars($cliente['nome']); ?></a></li>
         <?php endwhile; ?>
     </ul>
 
@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
             <?php endwhile; ?>
         </div>
 
-        <form action="/rechlytics/views/admin/admin_chat.php?cliente_id=<?php echo $cliente_id; ?>" method="POST">
+        <form action="views/admin/admin_chat.php?cliente_id=<?php echo $cliente_id; ?>" method="POST">
             <label>Mensagem:</label>
             <textarea name="mensagem" required></textarea>
             <button type="submit">Responder</button>
@@ -101,6 +101,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
         <p>Selecione um cliente para visualizar o chat.</p>
     <?php endif; ?>
 
-    <p><a href="/rechlytics/views/admin/admin_dashboard.php">Voltar</a></p>
+    <p><a href="views/admin/admin_dashboard.php">Voltar</a></p>
 </body>
 </html>

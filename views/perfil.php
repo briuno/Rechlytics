@@ -50,7 +50,7 @@ $stmt->fetch();
     <p><strong>Email:</strong> <?php echo htmlspecialchars($email); ?></p>
     <p><strong>CPF:</strong> <?php echo htmlspecialchars($cpf); ?></p>
 
-    <form action="/rechlytics/views/perfil.php" method="POST">
+    <form action="views/perfil.php" method="POST">
         <label>Empresa:</label>
         <input type="text" name="empresa" value="<?php echo htmlspecialchars($empresa); ?>">
 
@@ -63,6 +63,6 @@ $stmt->fetch();
         <button type="submit">Salvar Alterações</button>
     </form>
 
-    <p><a href="/rechlytics/views/dashboard.php">Voltar</a></p>
+    <p><a href="views/dashboard.php">Voltar</a></p>
 </body>
 </html>

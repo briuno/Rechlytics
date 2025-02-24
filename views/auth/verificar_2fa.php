@@ -4,7 +4,7 @@ include __DIR__ . '/../../config/db.php';
 include __DIR__ . '/../../controllers/log.php';
 
 if (!isset($_SESSION['usuario_2fa'])) {
-    header("Location: /rechlytics/views/login.php");
+    header("Location: views/login.php");
     exit();
 }
 
@@ -36,9 +36,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Redirecionar conforme o tipo de usuário
         if ($tipo_usuario === 'admin') {
-            header("Location: /rechlytics/views/admin/admin_dashboard.php");
+            header("Location: views/admin/admin_dashboard.php");
         } else {
-            header("Location: /rechlytics/views/dashboard.php");
+            header("Location: views/dashboard.php");
         }
         exit();
     } else {
@@ -60,12 +60,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p style="color: red;"><?php echo $_SESSION['erro_2fa']; unset($_SESSION['erro_2fa']); ?></p>
     <?php endif; ?>
 
-    <form action="/rechlytics/views/auth/verificar_2fa.php" method="POST">
+    <form action="views/auth/verificar_2fa.php" method="POST">
         <label>Digite o código recebido por e-mail:</label>
         <input type="text" name="codigo" required>
         <button type="submit">Confirmar</button>
     </form>
 
-    <p><a href="/rechlytics/views/login.php">Voltar</a></p>
+    <p><a href="views/login.php">Voltar</a></p>
 </body>
 </html>

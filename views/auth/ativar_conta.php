@@ -17,7 +17,7 @@ if (isset($_GET['email']) && isset($_GET['token'])) {
         $stmt->bind_param("s", $email);
 
         if ($stmt->execute()) {
-            echo "<p style='color: green;'>Conta ativada com sucesso! Agora você pode fazer <a href='/rechlytics/views/login.php'>login</a>.</p>";
+            echo "<p style='color: green;'>Conta ativada com sucesso! Agora você pode fazer <a href=views/login.php'>login</a>.</p>";
         } else {
             echo "<p style='color: red;'>Erro ao ativar a conta. Tente novamente mais tarde.</p>";
         }
