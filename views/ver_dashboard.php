@@ -4,7 +4,7 @@ include __DIR__ . '/../controllers/session_check.php';
 include __DIR__ . '/../config/db.php';
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /rechlytics/views/login.php");
+    header("Location: views/login.php");
     exit();
 }
 
@@ -33,6 +33,6 @@ $row = $result->fetch_assoc();
 <body>
     <h2><?php echo htmlspecialchars($row['nome']); ?></h2>
     <iframe src="<?php echo htmlspecialchars($row['url']); ?>" width="100%" height="600px"></iframe>
-    <p><a href="/rechlytics/views/dashboard.php">Voltar</a></p>
+    <p><a href="views/dashboard.php">Voltar</a></p>
 </body>
 </html>

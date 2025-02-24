@@ -28,7 +28,7 @@ if (isset($_SESSION['last_activity'])) {
         }
 
         // Redireciona para a página de login indicando que a sessão expirou
-        header("Location: /rechlytics/views/login.php?session_expired=1");
+        header("Location: views/login.php?session_expired=1");
         exit();
     }
 }

@@ -5,7 +5,7 @@ include __DIR__ . '/../../config/db.php';
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: /rechlytics/views/login.php");
+    header("Location: views/login.php");
     exit();
 }
 
@@ -50,6 +50,6 @@ $result = $stmt->get_result();
         <p>Nenhuma ação registrada no sistema.</p>
     <?php endif; ?>
 
-    <p><a href="/rechlytics/views/admin/admin_dashboard.php">Voltar ao Painel</a></p>
+    <p><a href="views/admin/admin_dashboard.php">Voltar ao Painel</a></p>
 </body>
 </html>

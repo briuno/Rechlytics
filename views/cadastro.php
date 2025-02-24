@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <h2>Cadastro de Usuário</h2>
-    <form action="/rechlytics/views/cadastro.php" method="POST">
+    <form action="views/cadastro.php" method="POST">
         <label>Nome:</label>
         <input type="text" name="nome" required>
         
@@ -106,6 +106,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit">Cadastrar</button>
     </form>
-    <p><a href="/rechlytics/views/login.php">Já tem uma conta? Faça login</a></p>
+    <p><a href="views/login.php">Já tem uma conta? Faça login</a></p>
 </body>
 </html>
