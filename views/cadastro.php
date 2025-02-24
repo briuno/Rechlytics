@@ -1,8 +1,8 @@
 <?php
 session_start();
-include __DIR__ . '/config/db.php';
-include __DIR__ . '/config/log.php'; // Para registrar o cadastro
-include __DIR__ . '/config/email.php'; // Para enviar e-mail de ativação
+include __DIR__ . '/../config/db.php';
+include __DIR__ . '/../controllers/log.php'; // Para registrar o cadastro
+include __DIR__ . '/../controllers/email.php'; // Para enviar e-mail de ativação
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST['nome']);
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Verificar se o e-mail já está cadastrado
+    // Verificar se o e-mail ou CPF já está cadastrado
     $stmt = $conn->prepare("SELECT id FROM usuarios WHERE email = ? OR cpf = ?");
     $stmt->bind_param("ss", $email, $cpf);
     $stmt->execute();
@@ -51,10 +51,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $usuario_id = $stmt->insert_id;
         registrarLog($conn, $usuario_id, "Novo usuário cadastrado");
 
-        // Enviar e-mail de ativação
-        $token = bin2hex(random_bytes(16)); // Token seguro
-        $ativacao_link = "https://rechlytics.com/auth/ativar_conta.php?email=$email&token=$token";
-        enviarEmail($email, "Confirme seu cadastro", "Clique no link para ativar sua conta: $ativacao_link");
+    // Criar token de ativação
+    $token = bin2hex(random_bytes(16));
+
+    // Atualizar token na coluna reset_token para ativação da conta
+    $stmt = $conn->prepare("UPDATE usuarios SET reset_token = ?, reset_token_expira = DATE_ADD(NOW(), INTERVAL 24 HOUR) WHERE id = ?");
+    $stmt->bind_param("si", $token, $usuario_id);
+    $stmt->execute();
+
+    // Enviar e-mail de ativação
+    $ativacao_link = "https://rechlytics.com/views/auth/ativar_conta.php?email=$email&token=$token";
+    enviarEmail($email, "Confirme seu cadastro", "Clique no link para ativar sua conta: $ativacao_link");
+
 
         echo "<p>Cadastro realizado com sucesso! Verifique seu e-mail para ativar sua conta.</p>";
     } else {
@@ -68,35 +76,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Cadastro - Rechlytics</title>
-    <script>
-        function validarCPF(cpf) {
-            cpf = cpf.replace(/[^\d]/g, '');
-            if (cpf.length !== 11 || /^(.)\1+$/.test(cpf)) return false;
-            let soma = 0, resto;
-            for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i - 1]) * (11 - i);
-            resto = (soma * 10) % 11;
-            if (resto == 10 || resto == 11) resto = 0;
-            if (resto != parseInt(cpf[9])) return false;
-            soma = 0;
-            for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i - 1]) * (12 - i);
-            resto = (soma * 10) % 11;
-            if (resto == 10 || resto == 11) resto = 0;
-            return resto == parseInt(cpf[10]);
-        }
-
-        function validarFormulario() {
-            let cpf = document.getElementById("cpf").value;
-            if (!validarCPF(cpf)) {
-                alert("CPF inválido!");
-                return false;
-            }
-            return true;
-        }
-    </script>
 </head>
 <body>
     <h2>Cadastro de Usuário</h2>
-    <form action="/auth/cadastro.php" method="POST" onsubmit="return validarFormulario()">
+    <form action="/rechlytics/views/cadastro.php" method="POST">
         <label>Nome:</label>
         <input type="text" name="nome" required>
         
@@ -104,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="email" name="email" required>
 
         <label>CPF:</label>
-        <input type="text" name="cpf" id="cpf" required>
+        <input type="text" name="cpf" required>
 
         <label>Telefone:</label>
         <input type="text" name="telefone" required>
@@ -123,6 +106,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit">Cadastrar</button>
     </form>
-    <p><a href="/auth/login.php">Já tem uma conta? Faça login</a></p>
+    <p><a href="/rechlytics/views/login.php">Já tem uma conta? Faça login</a></p>
 </body>
 </html>

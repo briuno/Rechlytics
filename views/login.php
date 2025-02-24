@@ -1,7 +1,10 @@
 <?php 
 session_start();
+
+// Verificar se o usuário está logado
 if (isset($_SESSION['usuario_id'])) {
-    header("Location: " . ($_SESSION['usuario_tipo'] == 'admin' ? "/admin/admin_dashboard.php" : "/client/dashboard.php"));
+    // Redirecionamento conforme o tipo de usuário
+    header("Location: " . ($_SESSION['usuario_tipo'] == 'admin' ? "/rechlytics/views/admin/admin_dashboard.php" : "/rechlytics/views/dashboard.php"));
     exit();
 }
 
@@ -29,16 +32,16 @@ unset($_SESSION['erro_login']); // Remover erro após exibição
 <body>
     <h2>Login</h2>
 
-    <form action="/controllers/auth.php" method="POST">
-        <label>Email:</label>
-        <input type="email" name="email" required>
+    <form action="/rechlytics/controllers/auth.php" method="POST">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
         
-        <label>Senha:</label>
-        <input type="password" name="senha" required>
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required>
 
         <button type="submit" name="login">Entrar</button>
     </form>
 
-    <p><a href="/auth/esq_senha.php">Esqueci minha senha</a></p>
+    <p><a href="/rechlytics/views/auth/esq_senha.php">Esqueci minha senha</a></p>
 </body>
 </html>

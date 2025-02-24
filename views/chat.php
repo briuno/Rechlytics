@@ -1,11 +1,11 @@
 <?php
 session_start();
-include __DIR__ . '/config/db.php';
-include __DIR__ . '/config/session_check.php';
-include __DIR__ . '/config/log.php';
+include __DIR__ . '/../config/db.php';
+include __DIR__ . '/../controllers/session_check.php';
+include __DIR__ . '/../controllers/log.php';
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /auth/login.php");
+    header("Location: /rechlytics/views/login.php");
     exit();
 }
 
@@ -33,36 +33,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Chat com Suporte - Rechlytics</title>
     <script>
-        function atualizarMensagens() {
-            fetch('/client/get_mensagens.php')
-                .then(response => response.json())
-                .then(data => {
-                    let chatBox = document.getElementById("chat-box");
-                    chatBox.innerHTML = "";
+    function atualizarMensagens() {
+        fetch('/rechlytics/controllers/get_mensagens.php')
+            .then(response => response.json())
+            .then(data => {
+                let chatBox = document.getElementById("chat-box");
+                chatBox.innerHTML = "";
 
-                    data.forEach(msg => {
-                        chatBox.innerHTML += `<p><strong>${msg.remetente}:</strong> ${msg.mensagem} <small>(${msg.data_envio})</small></p>`;
-                    });
+                if (data.erro) {
+                    chatBox.innerHTML = `<p style="color: red;">${data.erro}</p>`;
+                    return;
+                }
 
-                    chatBox.scrollTop = chatBox.scrollHeight;
+                if (data.mensagem) {
+                    chatBox.innerHTML = `<p>${data.mensagem}</p>`;
+                    return;
+                }
+
+                data.forEach(msg => {
+                    chatBox.innerHTML += `<p><strong>${msg.remetente}:</strong> ${msg.mensagem} <small>(${msg.data_envio})</small></p>`;
                 });
-        }
 
-        setInterval(atualizarMensagens, 5000); // Atualiza a cada 5 segundos
-        window.onload = atualizarMensagens;
-    </script>
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => console.error("Erro ao buscar mensagens:", error));
+    }
+
+    setInterval(atualizarMensagens, 5000); // Atualiza a cada 5 segundos
+    window.onload = atualizarMensagens;
+</script>
+
 </head>
 <body>
     <h2>Chat com Suporte</h2>
 
     <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;"></div>
 
-    <form action="/client/chat.php" method="POST">
+    <form action="/rechlytics/views/chat.php" method="POST">
         <label>Mensagem:</label>
         <textarea name="mensagem" required></textarea>
         <button type="submit">Enviar</button>
     </form>
 
-    <p><a href="/client/dashboard.php">Voltar</a></p>
+    <p><a href="/rechlytics/views/dashboard.php">Voltar</a></p>
 </body>
 </html>

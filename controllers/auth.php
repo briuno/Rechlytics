@@ -1,8 +1,8 @@
 <?php
 session_start();
 include __DIR__ . '/../config/db.php';
-include __DIR__ . '/../config/log.php';
-include __DIR__ . '/../config/email.php';
+include __DIR__ . '/../controllers/log.php';
+include __DIR__ . '/../controllers/email.php';
 
 $limite_tentativas = 5;
 $tempo_bloqueio = 15 * 60; // 15 minutos
@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         $tempo_restante = $_SESSION['tentativas_login'][$email]['tempo'] + $tempo_bloqueio - time();
         if ($tempo_restante > 0) {
             $_SESSION['erro_login'] = "Muitas tentativas falhas! Aguarde " . ceil($tempo_restante / 60) . " minutos.";
-            header("Location: /auth/login.php");
+            header("Location: /rechlytics/views/login.php");
             exit();
         } else {
             unset($_SESSION['tentativas_login'][$email]); // Resetar tentativas após o tempo de bloqueio
@@ -37,12 +37,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         // Verificar se a conta foi ativada
         if ($email_verificado == 0) {
             $_SESSION['erro_login'] = "Conta não ativada. Verifique seu e-mail.";
-            header("Location: /auth/login.php");
+            header("Location: /rechlytics/views/login.php");
             exit();
         }
 
         // Verificar senha
         if (password_verify($senha, $hash_senha)) {
+            // Definir sessão do usuário
+            $_SESSION['usuario_id'] = $id;
+            $_SESSION['usuario_nome'] = $nome;
+            $_SESSION['usuario_tipo'] = $tipo;
+
             // Gerar código 2FA
             $codigo_2fa = rand(100000, 999999);
             $expira_2fa = date("Y-m-d H:i:s", strtotime("+10 minutes"));
@@ -62,9 +67,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
             enviarEmail($email, $assunto, $mensagem);
 
-            // Redirecionar para tela de verificação 2FA
+            // Redirecionar para a tela de verificação 2FA
             $_SESSION['usuario_2fa'] = $id;
-            header("Location: /auth/verificar_2fa.php");
+            header("Location: /rechlytics/views/auth/verificar_2fa.php");
             exit();
         } else {
             $_SESSION['erro_login'] = "Usuário ou senha inválidos!";
@@ -85,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         $_SESSION['erro_login'] = "Muitas tentativas falhas! Tente novamente em 15 minutos.";
     }
 
-    header("Location: /auth/login.php");
+    header("Location: /rechlytics/views/login.php");
     exit();
 }
 ?>

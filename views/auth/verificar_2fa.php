@@ -1,10 +1,10 @@
 <?php
 session_start();
-include __DIR__ . '/config/db.php';
-include __DIR__ . '/config/log.php';
+include __DIR__ . '/../../config/db.php';
+include __DIR__ . '/../../controllers/log.php';
 
 if (!isset($_SESSION['usuario_2fa'])) {
-    header("Location: /auth/login.php");
+    header("Location: /rechlytics/views/login.php");
     exit();
 }
 
@@ -14,16 +14,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $codigo_digitado = trim($_POST['codigo']);
 
     // Verificar o código no banco
-    $stmt = $conn->prepare("SELECT two_factor_code, two_factor_expira FROM usuarios WHERE id = ?");
+    $stmt = $conn->prepare("SELECT two_factor_code, two_factor_expira, tipo FROM usuarios WHERE id = ?");
     $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
     $stmt->store_result();
-    $stmt->bind_result($codigo_armazenado, $expira);
+    $stmt->bind_result($codigo_armazenado, $expira, $tipo_usuario);
     $stmt->fetch();
 
     if ($stmt->num_rows > 0 && $codigo_digitado === $codigo_armazenado && strtotime($expira) > time()) {
         // Autenticação concluída
         $_SESSION['usuario_id'] = $usuario_id;
+        $_SESSION['usuario_tipo'] = $tipo_usuario;
         unset($_SESSION['usuario_2fa']);
 
         // Limpar código do banco
@@ -33,8 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         registrarLog($conn, $usuario_id, "Autenticação 2FA bem-sucedida");
 
-        // Redirecionar ao painel
-        header("Location: /client/dashboard.php");
+        // Redirecionar conforme o tipo de usuário
+        if ($tipo_usuario === 'admin') {
+            header("Location: /rechlytics/views/admin/admin_dashboard.php");
+        } else {
+            header("Location: /rechlytics/views/dashboard.php");
+        }
         exit();
     } else {
         $_SESSION['erro_2fa'] = "Código inválido ou expirado!";
@@ -55,12 +60,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p style="color: red;"><?php echo $_SESSION['erro_2fa']; unset($_SESSION['erro_2fa']); ?></p>
     <?php endif; ?>
 
-    <form action="/auth/verificar_2fa.php" method="POST">
+    <form action="/rechlytics/views/auth/verificar_2fa.php" method="POST">
         <label>Digite o código recebido por e-mail:</label>
         <input type="text" name="codigo" required>
         <button type="submit">Confirmar</button>
     </form>
 
-    <p><a href="/auth/login.php">Voltar</a></p>
+    <p><a href="/rechlytics/views/login.php">Voltar</a></p>
 </body>
 </html>

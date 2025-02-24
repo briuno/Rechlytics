@@ -1,6 +1,6 @@
 <?php
 session_start();
-include __DIR__ . '/config/db.php';
+include __DIR__ . '/../../config/db.php';
 
 if (!isset($_GET['token']) || empty($_GET['token'])) {
     die("Token inválido.");
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute();
 
         $_SESSION['msg'] = "Senha redefinida com sucesso! Faça login.";
-        header("Location: /auth/login.php");
+        header("Location: /rechlytics/views/login.php");
         exit();
     }
 }
@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset($_SESSION['msg']);
     }
     ?>
-    <form action="/auth/redefinir_senha.php?token=<?php echo htmlspecialchars($token); ?>" method="POST">
+    <form action="/rechlytics/views/auth/redefinir_senha.php?token=<?php echo htmlspecialchars($token); ?>" method="POST">
         <label>Nova Senha:</label>
         <input type="password" name="senha" required minlength="8">
         
@@ -70,6 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit">Redefinir Senha</button>
     </form>
-    <p><a href="/auth/login.php">Voltar ao Login</a></p>
+    <p><a href="/rechlytics/views/login.php">Voltar ao Login</a></p>
 </body>
 </html>

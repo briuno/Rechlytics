@@ -1,7 +1,7 @@
 <?php
 session_start();
-include __DIR__ . '/config/db.php'; // Garante a conexão com o banco
-include __DIR__ . '/config/log.php'; // Garante o sistema de logs
+include __DIR__ . '/../config/db.php'; 
+include __DIR__ . '/../controllers/log.php'; 
 
 // Registrar log de logout
 if (isset($_SESSION['usuario_id'])) {
@@ -13,6 +13,6 @@ session_unset();
 session_destroy();
 
 // Redirecionar para a página inicial
-header("Location: /index.php");
+header("Location: /rechlytics/index.php");
 exit();
 ?>

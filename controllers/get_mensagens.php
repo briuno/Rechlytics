@@ -1,8 +1,8 @@
 <?php
 session_start();
-include __DIR__ . '/config/db.php';
+include __DIR__ . '/../config/db.php';
 
-header('Content-Type: application/json'); // Define o cabeçalho da resposta como JSON
+header('Content-Type: application/json');
 
 if (!isset($_SESSION['usuario_id'])) {
     echo json_encode(["erro" => "Acesso não autorizado."]);
@@ -13,21 +13,16 @@ $usuario_id = $_SESSION['usuario_id'];
 
 // Se for admin e estiver acessando mensagens de um cliente específico
 if ($_SESSION['usuario_tipo'] === 'admin' && isset($_GET['cliente_id'])) {
-    $usuario_id = intval($_GET['cliente_id']); // Garante que seja um número
+    $usuario_id = intval($_GET['cliente_id']);
 }
 
 // Consulta as mensagens do chat
 $stmt = $conn->prepare("SELECT mensagem, remetente, data_envio FROM chat_mensagens WHERE usuario_id = ? ORDER BY data_envio ASC");
 $stmt->bind_param("i", $usuario_id);
-
-if (!$stmt->execute()) {
-    echo json_encode(["erro" => "Erro ao buscar mensagens do chat."]);
-    exit();
-}
-
+$stmt->execute();
 $result = $stmt->get_result();
-$mensagens = [];
 
+$mensagens = [];
 while ($row = $result->fetch_assoc()) {
     $mensagens[] = [
         "mensagem" => htmlspecialchars($row['mensagem']),
@@ -36,5 +31,10 @@ while ($row = $result->fetch_assoc()) {
     ];
 }
 
-echo json_encode($mensagens);
+// Verifica se há mensagens
+if (empty($mensagens)) {
+    echo json_encode(["mensagem" => "Nenhuma mensagem encontrada."]);
+} else {
+    echo json_encode($mensagens);
+}
 ?>
