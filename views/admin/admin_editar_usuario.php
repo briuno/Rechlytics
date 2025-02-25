@@ -4,8 +4,8 @@ include __DIR__ . '/../../controllers/session_check_admin.php';
 include __DIR__ . '/../../config/db.php';
 include __DIR__ . '/../../controllers/log.php';
 
-// Caminho base para evitar problemas no redirecionamento
-$base_url = dirname($_SERVER['SCRIPT_NAME'], 3);
+// Caminho base dinâmico com domínio correto
+$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 3), '/');
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {

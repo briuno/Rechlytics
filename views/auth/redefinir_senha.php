@@ -2,8 +2,8 @@
 session_start();
 include __DIR__ . '/../../config/db.php';
 
-// Caminho base para evitar problemas no redirecionamento
-$base_url = dirname($_SERVER['SCRIPT_NAME'], 2);
+// Caminho base dinâmico com domínio correto
+$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
 
 if (!isset($_GET['token']) || empty($_GET['token'])) {
     die("<p style='color: red;'>Token inválido.</p>");

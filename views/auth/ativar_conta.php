@@ -1,8 +1,8 @@
 <?php
 include __DIR__ . '/../../config/db.php';
 
-// Caminho base para evitar problemas no redirecionamento
-$base_url = dirname($_SERVER['SCRIPT_NAME'], 3);
+// Caminho base dinâmico com domínio correto
+$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 3), '/');
 
 if (isset($_GET['email']) && isset($_GET['token'])) {
     $email = htmlspecialchars($_GET['email'], ENT_QUOTES, 'UTF-8');

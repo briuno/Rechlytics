@@ -12,8 +12,8 @@ include __DIR__ . '/../config/db.php';
 include __DIR__ . '/../controllers/log.php';
 
 // Caminho base para evitar problemas no redirecionamento
-$base_url = dirname($_SERVER['SCRIPT_NAME'], 2); // Obtém a raiz correta do projeto
-$login_url = $base_url . "/login.php"; // Caminho correto para o login
+$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
+$login_url = $base_url . "/views/login.php"; // Caminho correto para login
 
 // Verifica se a variável de última atividade existe
 if (isset($_SESSION['last_activity'])) {

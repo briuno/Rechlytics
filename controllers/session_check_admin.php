@@ -12,8 +12,9 @@ include __DIR__ . '/../config/db.php';
 include __DIR__ . '/../controllers/log.php';
 
 // Caminho base para evitar problemas no redirecionamento
-$base_url = dirname($_SERVER['SCRIPT_NAME'], 2); // Obtém a raiz de "views/admin/"
-$login_url = $base_url . "/login.php"; // Caminho correto para o login
+$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
+$login_url = $base_url . "/views/login.php";
+
 
 // Verifica se o usuário está logado e se é administrador
 if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['usuario_tipo']) || $_SESSION['usuario_tipo'] !== 'admin') {

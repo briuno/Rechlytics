@@ -1,8 +1,8 @@
 <?php 
 session_start();
 
-// Caminho base dinâmico
-$base_url = dirname($_SERVER['SCRIPT_NAME'], 2);
+// Caminho base dinâmico com domínio correto
+$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
 
 // Verificar se o usuário está logado
 if (isset($_SESSION['usuario_id'])) {
@@ -49,3 +49,4 @@ unset($_SESSION['erro_login']); // Remover erro após exibição
 
 </body>
 </html>
+
