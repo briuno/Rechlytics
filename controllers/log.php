@@ -6,16 +6,18 @@ if (!function_exists('registrarLog')) {
             return;
         }
 
-        // Se o ID do usuário for nulo, registrar como "Sistema"
+        date_default_timezone_set('America/Sao_Paulo'); // Garante o fuso horário correto
+        $data_atual = date("Y-m-d H:i:s"); // Captura a data correta
+
         $usuario_id = !empty($usuario_id) ? $usuario_id : NULL;
 
-        $stmt = $conn->prepare("INSERT INTO logs (usuario_id, acao, data) VALUES (?, ?, CURRENT_TIMESTAMP)");
+        $stmt = $conn->prepare("INSERT INTO logs (usuario_id, acao, data) VALUES (?, ?, ?)");
         if (!$stmt) {
             error_log("Erro ao preparar statement de log: " . $conn->error);
             return;
         }
 
-        $stmt->bind_param("is", $usuario_id, $acao);
+        $stmt->bind_param("iss", $usuario_id, $acao, $data_atual);
         
         if (!$stmt->execute()) {
             error_log("Erro ao registrar log: " . $stmt->error);

@@ -6,13 +6,13 @@ include __DIR__ . '/../controllers/email.php';
 
 $limite_tentativas = 5;
 $tempo_bloqueio = 15 * 60; // 15 minutos
+$tempo_validade_2fa = 24 * 60 * 60; // 24 horas
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     $email = trim($_POST['email']);
     $senha = $_POST['senha'];
-    $ip_usuario = $_SERVER['REMOTE_ADDR']; // Captura o IP do usuário
 
-    // Verifica tentativas de login por e-mail e IP
+    // Verifica tentativas de login por e-mail
     if (isset($_SESSION['tentativas_login'][$email]) && $_SESSION['tentativas_login'][$email]['tentativas'] >= $limite_tentativas) {
         $tempo_restante = $_SESSION['tentativas_login'][$email]['tempo'] + $tempo_bloqueio - time();
         if ($tempo_restante > 0) {
@@ -25,13 +25,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     }
 
     // Buscar usuário no banco
-    $stmt = $conn->prepare("SELECT id, nome, senha, tipo, email_verificado FROM usuarios WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, nome, senha, tipo, email_verificado, two_factor_code, two_factor_expira, two_factor_valid_until FROM usuarios WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $nome, $hash_senha, $tipo, $email_verificado);
+        $stmt->bind_result($id, $nome, $hash_senha, $tipo, $email_verificado, $codigo_armazenado, $expira_2fa, $validade_2fa);
         $stmt->fetch();
 
         // Verificar se a conta foi ativada
@@ -43,16 +43,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
         // Verificar senha
         if (password_verify($senha, $hash_senha)) {
-            // Definir sessão do usuário
-            $_SESSION['usuario_id'] = $id;
-            $_SESSION['usuario_nome'] = $nome;
-            $_SESSION['usuario_tipo'] = $tipo;
+            // Verifica se o 2FA ainda é válido (24 horas)
+            if (!empty($validade_2fa) && strtotime($validade_2fa) > time()) {
+                $_SESSION['usuario_id'] = $id;
+                $_SESSION['usuario_nome'] = $nome;
+                $_SESSION['usuario_tipo'] = $tipo;
 
-            // Gerar código 2FA
+                // Redirecionar para dashboard correto
+                header("Location: " . ($tipo === 'admin' ? "../views/admin/admin_dashboard.php" : "../views/dashboard.php"));
+                exit();
+            }
+
+            // Gerar novo código 2FA
             $codigo_2fa = rand(100000, 999999);
             $expira_2fa = date("Y-m-d H:i:s", strtotime("+10 minutes"));
 
-            // Armazenar no banco
+            // Atualizar código 2FA no banco
             $stmt = $conn->prepare("UPDATE usuarios SET two_factor_code = ?, two_factor_expira = ? WHERE id = ?");
             $stmt->bind_param("ssi", $codigo_2fa, $expira_2fa, $id);
             $stmt->execute();
@@ -67,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
             enviarEmail($email, $assunto, $mensagem);
 
-            // Redirecionar para a tela de verificação 2FA
+            // Armazena sessão temporária para 2FA
             $_SESSION['usuario_2fa'] = $id;
             header("Location: ../views/auth/verificar_2fa.php");
             exit();

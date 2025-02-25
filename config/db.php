@@ -4,6 +4,8 @@ $servername = "193.203.175.215";
 $username = "u332555040_rechlytics_use";
 $password = "Fo27&ofDS~";
 $dbname = "u332555040_rechlytics_db";
+date_default_timezone_set('America/Sao_Paulo');
+
 
 // Ativar relatório de erros para MySQLi
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
