@@ -3,8 +3,11 @@ session_start();
 include __DIR__ . '/../controllers/session_check.php';
 include __DIR__ . '/../config/db.php';
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 2);
+
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -33,6 +36,6 @@ $row = $result->fetch_assoc();
 <body>
     <h2><?php echo htmlspecialchars($row['nome']); ?></h2>
     <iframe src="<?php echo htmlspecialchars($row['url']); ?>" width="100%" height="600px"></iframe>
-    <p><a href="views/dashboard.php">Voltar</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/dashboard.php">Voltar</a></p>
 </body>
 </html>

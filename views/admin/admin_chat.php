@@ -6,11 +6,15 @@ ini_set('display_errors', 1);
 session_start();
 include __DIR__ . '/../../controllers/session_check_admin.php';
 include __DIR__ . '/../../config/db.php';
-include __DIR__ . '/../../controllers/log.php'; // Adicionado corretamente
-include __DIR__ . '/../../controllers/email.php'; // Inclui o sistema de e-mail
+include __DIR__ . '/../../controllers/log.php';
+include __DIR__ . '/../../controllers/email.php';
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 3); // Obtém a raiz correta do projeto
+
+// Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -39,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     $stmt->bind_param("iss", $cliente_id, $mensagem, $remetente);
     $stmt->execute();
 
-    // **Aqui estava o erro: A função registrarLog não era encontrada porque o log.php não estava incluído corretamente**
+    // Registrar log
     registrarLog($conn, $_SESSION['usuario_id'], "Respondeu no chat para o cliente ID: $cliente_id");
 
     // Buscar o e-mail do cliente
@@ -53,12 +57,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     if (!empty($email_cliente)) {
         // Enviar notificação por e-mail
         $assunto = "Nova resposta no chat - Rechlytics";
-        $mensagem_email = "Olá, você recebeu uma nova resposta no chat do suporte. Acesse o link abaixo para visualizar:\n\nhttps://rechlytics.com/views/chat.php";
+        $mensagem_email = "Olá, você recebeu uma nova resposta no chat do suporte. Acesse o link abaixo para visualizar:\n\n$base_url/views/chat.php";
 
         enviarEmail($email_cliente, $assunto, $mensagem_email);
     }
 
-    echo "<script>window.location.href='views/admin/admin_chat.php?cliente_id=$cliente_id';</script>";
+    header("Location: $base_url/views/admin/admin_chat.php?cliente_id=$cliente_id");
     exit();
 }
 ?>
@@ -75,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     <h3>Selecionar Cliente:</h3>
     <ul>
         <?php while ($cliente = $clientes->fetch_assoc()): ?>
-            <li><a href="views/admin/admin_chat.php?cliente_id=<?php echo $cliente['id']; ?>"><?php echo htmlspecialchars($cliente['nome']); ?></a></li>
+            <li><a href="<?php echo $base_url; ?>/views/admin/admin_chat.php?cliente_id=<?php echo $cliente['id']; ?>"><?php echo htmlspecialchars($cliente['nome']); ?></a></li>
         <?php endwhile; ?>
     </ul>
 
@@ -92,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
             <?php endwhile; ?>
         </div>
 
-        <form action="views/admin/admin_chat.php?cliente_id=<?php echo $cliente_id; ?>" method="POST">
+        <form action="<?php echo $base_url; ?>/views/admin/admin_chat.php?cliente_id=<?php echo $cliente_id; ?>" method="POST">
             <label>Mensagem:</label>
             <textarea name="mensagem" required></textarea>
             <button type="submit">Responder</button>
@@ -101,6 +105,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
         <p>Selecione um cliente para visualizar o chat.</p>
     <?php endif; ?>
 
-    <p><a href="views/admin/admin_dashboard.php">Voltar</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/admin/admin_dashboard.php">Voltar</a></p>
 </body>
 </html>

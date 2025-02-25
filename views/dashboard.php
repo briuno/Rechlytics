@@ -3,9 +3,12 @@ session_start();
 include __DIR__ . '/../controllers/session_check.php';
 include __DIR__ . '/../config/db.php';
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 2);
+
 // Verifica se o usuário está logado
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -31,7 +34,7 @@ $result = $stmt->get_result();
 </head>
 <body>
     <h2>Bem-vindo, <?php echo $usuario_nome; ?>!</h2>
-    <p><a href="views/perfil.php">Editar Perfil</a></p>
+    <p><a href="<?php echo $base_url; ?>/perfil.php">Editar Perfil</a></p>
 
     <h3>Seus Dashboards</h3>
 
@@ -39,7 +42,7 @@ $result = $stmt->get_result();
         <ul>
             <?php while ($row = $result->fetch_assoc()): ?>
                 <li>
-                    <a href="views/ver_dashboard.php?id=<?php echo htmlspecialchars($row['id']); ?>">
+                    <a href="<?php echo $base_url; ?>/ver_dashboard.php?id=<?php echo htmlspecialchars($row['id']); ?>">
                         <?php echo htmlspecialchars($row['nome']); ?>
                     </a>
                 </li>
@@ -49,7 +52,7 @@ $result = $stmt->get_result();
         <p>Nenhum dashboard disponível.</p>
     <?php endif; ?>
 
-    <p><a href="views/chat.php">Falar com Suporte</a></p>
-    <p><a href="views/logout.php">Sair</a></p>
+    <p><a href="<?php echo $base_url; ?>/chat.php">Falar com Suporte</a></p>
+    <p><a href="<?php echo $base_url; ?>/logout.php">Sair</a></p>
 </body>
 </html>

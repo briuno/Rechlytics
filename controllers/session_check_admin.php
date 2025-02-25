@@ -11,9 +11,13 @@ $timeout_duration = 1800;
 include __DIR__ . '/../config/db.php';
 include __DIR__ . '/../controllers/log.php';
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 2); // Obtém a raiz de "views/admin/"
+$login_url = $base_url . "/login.php"; // Caminho correto para o login
+
 // Verifica se o usuário está logado e se é administrador
 if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['usuario_tipo']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: /views/login.php?acesso=negado");
+    header("Location: $login_url?acesso=negado");
     exit();
 }
 
@@ -30,11 +34,12 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) >
         registrarLog($conn, $usuario_id, "Logout automático por inatividade - Admin");
     }
 
-    header("Location: /views/login.php?session_expired=1");
+    header("Location: $login_url?session_expired=1");
     exit();
 }
 
 // Atualiza o timestamp da última atividade para controle de sessão
 $_SESSION['last_activity'] = time();
 ?>
+
 

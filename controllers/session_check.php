@@ -11,6 +11,10 @@ $timeout_duration = 1800;
 include __DIR__ . '/../config/db.php';
 include __DIR__ . '/../controllers/log.php';
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 2); // Obtém a raiz correta do projeto
+$login_url = $base_url . "/login.php"; // Caminho correto para o login
+
 // Verifica se a variável de última atividade existe
 if (isset($_SESSION['last_activity'])) {
     // Se a diferença entre o tempo atual e a última atividade for maior que o tempo limite
@@ -28,7 +32,7 @@ if (isset($_SESSION['last_activity'])) {
         }
 
         // Redireciona para a página de login indicando que a sessão expirou
-        header("Location: views/login.php?session_expired=1");
+        header("Location: $login_url?session_expired=1");
         exit();
     }
 }

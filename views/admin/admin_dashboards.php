@@ -1,12 +1,15 @@
 <?php
 session_start();
-include __DIR__ . '/../../controllers/session_check_admin.php';
-include __DIR__ . '/../../config/db.php';
-include __DIR__ . '/../../controllers/log.php';
+include __DIR__ . '/../../controllers/session_check_admin.php'; // Caminho correto
+include __DIR__ . '/../../config/db.php'; // Caminho correto
+include __DIR__ . '/../../controllers/log.php'; // Caminho correto
+
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 3); // Obtém a raiz correta do projeto
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -63,7 +66,7 @@ $result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, u
 <body>
     <h2>Gerenciar Dashboards</h2>
 
-    <form action="views/admin/admin_dashboards.php" method="POST">
+    <form action="<?php echo $base_url; ?>/views/admin/admin_dashboards.php" method="POST">
         <input type="hidden" name="dashboard_id" id="dashboard_id">
         <label>ID do Cliente:</label>
         <input type="number" name="usuario_id" id="usuario_id" required>
@@ -82,7 +85,7 @@ $result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, u
                 <br> <a href="<?php echo htmlspecialchars($row['url']); ?>" target="_blank">Ver Dashboard</a>
                 <br>
                 <button onclick="editarDashboard('<?php echo $row['id']; ?>', '<?php echo $row['usuario_id']; ?>', '<?php echo htmlspecialchars($row['nome']); ?>', '<?php echo htmlspecialchars($row['url']); ?>')">Editar</button>
-                <form action="views/admin/admin_dashboards.php" method="POST" style="display:inline;">
+                <form action="<?php echo $base_url; ?>/views/admin/admin_dashboards.php" method="POST" style="display:inline;">
                     <input type="hidden" name="dashboard_id" value="<?php echo $row['id']; ?>">
                     <button type="submit" name="excluir" onclick="return confirm('Tem certeza que deseja excluir este dashboard?');">Excluir</button>
                 </form>
@@ -99,6 +102,6 @@ $result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, u
         }
     </script>
 
-    <p><a href="views/admin/admin_dashboard.php">Voltar</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/admin/admin_dashboard.php">Voltar</a></p>
 </body>
 </html>

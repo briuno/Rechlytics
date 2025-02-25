@@ -4,8 +4,11 @@ include __DIR__ . '/../config/db.php';
 include __DIR__ . '/../controllers/session_check.php';
 include __DIR__ . '/../controllers/log.php';
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 2);
+
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -34,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Chat com Suporte - Rechlytics</title>
     <script>
     function atualizarMensagens() {
-        fetch('controllers/get_mensagens.php')
+        fetch('<?php echo $base_url; ?>/controllers/get_mensagens.php')
             .then(response => response.json())
             .then(data => {
                 let chatBox = document.getElementById("chat-box");
@@ -69,12 +72,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;"></div>
 
-    <form action="views/chat.php" method="POST">
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
         <label>Mensagem:</label>
         <textarea name="mensagem" required></textarea>
         <button type="submit">Enviar</button>
     </form>
 
-    <p><a href="views/dashboard.php">Voltar</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/dashboard.php">Voltar</a></p>
 </body>
 </html>

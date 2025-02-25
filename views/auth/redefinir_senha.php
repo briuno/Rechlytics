@@ -2,8 +2,11 @@
 session_start();
 include __DIR__ . '/../../config/db.php';
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 2);
+
 if (!isset($_GET['token']) || empty($_GET['token'])) {
-    die("Token inválido.");
+    die("<p style='color: red;'>Token inválido.</p>");
 }
 
 $token = htmlspecialchars($_GET['token'], ENT_QUOTES, 'UTF-8');
@@ -15,7 +18,7 @@ $stmt->execute();
 $stmt->store_result();
 
 if ($stmt->num_rows == 0) {
-    die("Token inválido ou expirado.");
+    die("<p style='color: red;'>Token inválido ou expirado.</p>");
 }
 
 $stmt->bind_result($usuario_id);
@@ -28,9 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Verificar se as senhas coincidem
     if ($nova_senha !== $confirma_senha) {
-        $_SESSION['msg'] = "As senhas não coincidem!";
+        $_SESSION['msg'] = "⚠ As senhas não coincidem!";
     } elseif (strlen($nova_senha) < 8) {
-        $_SESSION['msg'] = "A senha deve ter pelo menos 8 caracteres!";
+        $_SESSION['msg'] = "⚠ A senha deve ter pelo menos 8 caracteres!";
     } else {
         // Criar hash seguro da senha
         $senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
@@ -40,8 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("si", $senha_hash, $usuario_id);
         $stmt->execute();
 
-        $_SESSION['msg'] = "Senha redefinida com sucesso! Faça login.";
-        header("Location: views/login.php");
+        $_SESSION['msg'] = "✅ Senha redefinida com sucesso! Faça login.";
+        header("Location: $base_url/views/login.php");
         exit();
     }
 }
@@ -54,14 +57,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Redefinir Senha - Rechlytics</title>
 </head>
 <body>
-    <h2>Redefinir Senha</h2>
+    <h2>🔑 Redefinir Senha</h2>
+    
     <?php
     if (isset($_SESSION['msg'])) {
         echo "<p style='color: red;'>" . $_SESSION['msg'] . "</p>";
         unset($_SESSION['msg']);
     }
     ?>
-    <form action="views/auth/redefinir_senha.php?token=<?php echo htmlspecialchars($token); ?>" method="POST">
+    
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?token=' . htmlspecialchars($token); ?>" method="POST">
         <label>Nova Senha:</label>
         <input type="password" name="senha" required minlength="8">
         
@@ -70,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit">Redefinir Senha</button>
     </form>
-    <p><a href="views/login.php">Voltar ao Login</a></p>
+
+    <p><a href="<?php echo $base_url; ?>/views/login.php">🔙 Voltar ao Login</a></p>
 </body>
 </html>

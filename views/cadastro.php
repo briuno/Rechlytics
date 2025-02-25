@@ -4,6 +4,9 @@ include __DIR__ . '/../config/db.php';
 include __DIR__ . '/../controllers/log.php'; // Para registrar o cadastro
 include __DIR__ . '/../controllers/email.php'; // Para enviar e-mail de ativação
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 2);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST['nome']);
     $email = trim($_POST['email']);
@@ -24,7 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Verificar se as senhas coincidem
     if ($senha !== $confirma_senha) {
-        echo "<p>As senhas não coincidem.</p>";
+        $_SESSION['msg'] = "⚠ As senhas não coincidem!";
+        header("Location: $base_url/views/cadastro.php");
         exit();
     }
 
@@ -35,7 +39,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->store_result();
     
     if ($stmt->num_rows > 0) {
-        echo "<p>Este e-mail ou CPF já está cadastrado.</p>";
+        $_SESSION['msg'] = "⚠ Este e-mail ou CPF já está cadastrado.";
+        header("Location: $base_url/views/cadastro.php");
         exit();
     }
 
@@ -43,30 +48,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
     // Cadastrar usuário
-    $stmt = $conn->prepare("INSERT INTO usuarios (nome, email, senha, cpf, telefone, endereco, empresa, tipo, email_verificado) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, 'cliente', 0)");
-    $stmt->bind_param("sssssss", $nome, $email, $senha_hash, $cpf, $telefone, $endereco, $empresa);
+    $stmt = $conn->prepare("INSERT INTO usuarios (nome, email, senha, cpf, telefone, endereco, empresa, tipo, email_verificado, reset_token, reset_token_expira) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, 'cliente', 0, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))");
+    $token = bin2hex(random_bytes(16));
+    $stmt->bind_param("ssssssss", $nome, $email, $senha_hash, $cpf, $telefone, $endereco, $empresa, $token);
     
     if ($stmt->execute()) {
         $usuario_id = $stmt->insert_id;
         registrarLog($conn, $usuario_id, "Novo usuário cadastrado");
 
-    // Criar token de ativação
-    $token = bin2hex(random_bytes(16));
+        // Enviar e-mail de ativação
+        $ativacao_link = "https://rechlytics.com/views/auth/ativar_conta.php?email=$email&token=$token";
+        enviarEmail($email, "Confirme seu cadastro", "Clique no link para ativar sua conta: $ativacao_link");
 
-    // Atualizar token na coluna reset_token para ativação da conta
-    $stmt = $conn->prepare("UPDATE usuarios SET reset_token = ?, reset_token_expira = DATE_ADD(NOW(), INTERVAL 24 HOUR) WHERE id = ?");
-    $stmt->bind_param("si", $token, $usuario_id);
-    $stmt->execute();
-
-    // Enviar e-mail de ativação
-    $ativacao_link = "https://rechlytics.com/views/auth/ativar_conta.php?email=$email&token=$token";
-    enviarEmail($email, "Confirme seu cadastro", "Clique no link para ativar sua conta: $ativacao_link");
-
-
-        echo "<p>Cadastro realizado com sucesso! Verifique seu e-mail para ativar sua conta.</p>";
+        $_SESSION['msg'] = "✅ Cadastro realizado com sucesso! Verifique seu e-mail para ativar sua conta.";
+        header("Location: $base_url/views/login.php");
+        exit();
     } else {
-        echo "<p>Erro ao cadastrar usuário.</p>";
+        $_SESSION['msg'] = "❌ Erro ao cadastrar usuário.";
+        header("Location: $base_url/views/cadastro.php");
+        exit();
     }
 }
 ?>
@@ -79,7 +80,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <h2>Cadastro de Usuário</h2>
-    <form action="views/cadastro.php" method="POST">
+    
+    <?php
+    if (isset($_SESSION['msg'])) {
+        echo "<p style='color: red;'>" . $_SESSION['msg'] . "</p>";
+        unset($_SESSION['msg']);
+    }
+    ?>
+    
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
         <label>Nome:</label>
         <input type="text" name="nome" required>
         
@@ -99,13 +108,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="text" name="empresa">
 
         <label>Senha:</label>
-        <input type="password" name="senha" required>
+        <input type="password" name="senha" required minlength="8">
         
         <label>Confirme a Senha:</label>
-        <input type="password" name="confirma_senha" required>
+        <input type="password" name="confirma_senha" required minlength="8">
 
         <button type="submit">Cadastrar</button>
     </form>
-    <p><a href="views/login.php">Já tem uma conta? Faça login</a></p>
+
+    <p><a href="<?php echo $base_url; ?>/views/login.php">🔙 Já tem uma conta? Faça login</a></p>
 </body>
 </html>

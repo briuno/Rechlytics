@@ -1,12 +1,15 @@
 <?php
 session_start();
-include __DIR__ . '/../../controllers/session_check_admin.php'; // Caminho correto
-include __DIR__ . '/../../config/db.php'; // Caminho correto
-include __DIR__ . '/../../controllers/log.php'; // Caminho correto
+require_once __DIR__ . '/../../controllers/session_check_admin.php'; 
+require_once __DIR__ . '/../../config/db.php'; 
+require_once __DIR__ . '/../../controllers/log.php'; // Agora usando require_once
+
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 3); // Obtém a raiz correta do projeto
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -38,7 +41,7 @@ $result = $stmt->get_result();
                     <?php echo htmlspecialchars($row['email']); ?> - 
                     <?php echo htmlspecialchars(ucfirst($row['tipo'])); ?>  
                     (Cadastrado em: <?php echo date("d/m/Y H:i", strtotime($row['data_criacao'])); ?>) 
-                    - <a href="views/admin/admin_editar_usuario.php?id=<?php echo $row['id']; ?>">Editar</a>
+                    - <a href="<?php echo $base_url; ?>/views/admin/admin_editar_usuario.php?id=<?php echo $row['id']; ?>">Editar</a>
                 </li>
             <?php endwhile; ?>
         </ul>
@@ -47,9 +50,9 @@ $result = $stmt->get_result();
     <?php endif; ?>
 
     <h3>Gerenciamento</h3>
-    <p><a href="views/admin/admin_dashboards.php">Gerenciar Dashboards</a></p>
-    <p><a href="views/admin/admin_logs.php">Ver Auditoria de Logs</a></p>
-    <p><a href="views/admin/admin_chat.php">Ver Mensagens</a></p>
-    <p><a href="views/logout.php">Sair</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/admin/admin_dashboards.php">Gerenciar Dashboards</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/admin/admin_logs.php">Ver Auditoria de Logs</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/admin/admin_chat.php">Ver Mensagens</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/logout.php">Sair</a></p>
 </body>
 </html>

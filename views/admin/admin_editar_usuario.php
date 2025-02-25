@@ -4,9 +4,12 @@ include __DIR__ . '/../../controllers/session_check_admin.php';
 include __DIR__ . '/../../config/db.php';
 include __DIR__ . '/../../controllers/log.php';
 
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 3);
+
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
-    header("Location: views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -34,7 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST['nome']);
     $email = trim($_POST['email']);
     $tipo = trim($_POST['tipo']);
-    $cpf = trim($_POST['cpf']);
     $empresa = trim($_POST['empresa']);
     $endereco = trim($_POST['endereco']);
     $telefone = trim($_POST['telefone']);
@@ -45,13 +47,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Atualizar os dados do usuário
-    $stmt = $conn->prepare("UPDATE usuarios SET nome = ?, email = ?, tipo = ?, cpf = ?, empresa = ?, endereco = ?, telefone = ? WHERE id = ?");
-    $stmt->bind_param("sssssssi", $nome, $email, $tipo, $cpf, $empresa, $endereco, $telefone, $usuario_id);
+    $stmt = $conn->prepare("UPDATE usuarios SET nome = ?, email = ?, tipo = ?, empresa = ?, endereco = ?, telefone = ? WHERE id = ?");
+    $stmt->bind_param("ssssssi", $nome, $email, $tipo, $empresa, $endereco, $telefone, $usuario_id);
 
     if ($stmt->execute()) {
         registrarLog($conn, $_SESSION['usuario_id'], "Editou o usuário ID $usuario_id");
         $_SESSION['msg'] = "Usuário atualizado com sucesso!";
-        header("Location: views/admin/admin_dashboard.php");
+        header("Location: $base_url/views/admin/admin_dashboard.php");
         exit();
     } else {
         $_SESSION['msg'] = "Erro ao atualizar usuário.";
@@ -72,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p style="color: red;"><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>
     <?php endif; ?>
 
-    <form action="views/admin/admin_editar_usuario.php?id=<?php echo $usuario_id; ?>" method="POST">
+    <form action="<?php echo $base_url; ?>/views/admin/admin_editar_usuario.php?id=<?php echo $usuario_id; ?>" method="POST">
         <label>Nome:</label>
         <input type="text" name="nome" value="<?php echo htmlspecialchars($usuario['nome']); ?>" required>
 
@@ -86,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </select>
 
         <label>CPF:</label>
-        <input type="text" name="cpf" value="<?php echo htmlspecialchars($usuario['cpf']); ?>" required>
+        <p><?php echo htmlspecialchars($usuario['cpf']); ?></p> <!-- CPF somente para exibição -->
 
         <label>Empresa:</label>
         <input type="text" name="empresa" value="<?php echo htmlspecialchars($usuario['empresa']); ?>">
@@ -100,6 +102,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Salvar Alterações</button>
     </form>
 
-    <p><a href="views/admin/admin_dashboard.php">Voltar</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/admin/admin_dashboard.php">Voltar</a></p>
 </body>
 </html>

@@ -2,10 +2,13 @@
 session_start();
 include __DIR__ . '/../controllers/session_check.php';
 include __DIR__ . '/../config/db.php';
-include __DIR__ . '/../controllers/log.php'; // Para registrar ações no sistema
+include __DIR__ . '/../controllers/log.php';
+
+// Caminho base para evitar problemas no redirecionamento
+$base_url = dirname($_SERVER['SCRIPT_NAME'], 2);
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /rechlytics/views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -21,11 +24,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sssi", $empresa, $endereco, $telefone, $usuario_id);
 
     if ($stmt->execute()) {
-        echo "<p>Perfil atualizado com sucesso!</p>";
         registrarLog($conn, $_SESSION['usuario_id'], "Atualizou perfil");
+        $_SESSION['msg'] = "Perfil atualizado com sucesso!";
     } else {
-        echo "<p>Erro ao atualizar perfil.</p>";
+        $_SESSION['msg'] = "Erro ao atualizar perfil.";
     }
+
+    header("Location: $base_url/views/perfil.php");
+    exit();
 }
 
 // Buscar dados do usuário
@@ -45,12 +51,16 @@ $stmt->fetch();
 </head>
 <body>
     <h2>Meu Perfil</h2>
-    
+
+    <?php if (isset($_SESSION['msg'])): ?>
+        <p style="color: green;"><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>
+    <?php endif; ?>
+
     <p><strong>Nome:</strong> <?php echo htmlspecialchars($nome); ?></p>
     <p><strong>Email:</strong> <?php echo htmlspecialchars($email); ?></p>
     <p><strong>CPF:</strong> <?php echo htmlspecialchars($cpf); ?></p>
 
-    <form action="views/perfil.php" method="POST">
+    <form action="<?php echo $base_url; ?>/views/perfil.php" method="POST">
         <label>Empresa:</label>
         <input type="text" name="empresa" value="<?php echo htmlspecialchars($empresa); ?>">
 
@@ -63,6 +73,6 @@ $stmt->fetch();
         <button type="submit">Salvar Alterações</button>
     </form>
 
-    <p><a href="views/dashboard.php">Voltar</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/dashboard.php">Voltar</a></p>
 </body>
 </html>

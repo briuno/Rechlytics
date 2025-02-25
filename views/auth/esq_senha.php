@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['msg'] = "Se esse e-mail estiver cadastrado, um link será enviado.";
     }
 
-    header("Location: views/auth/esq_senha.php");
+    header("Location: ../auth/esq_senha.php");
     exit();
 }
 ?>
@@ -60,11 +60,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset($_SESSION['msg']);
     }
     ?>
-    <form action="views/auth/esq_senha.php" method="POST">
+    <form action="../auth/esq_senha.php" method="POST">
         <label>Email:</label>
         <input type="email" name="email" required>
         <button type="submit">Enviar Link</button>
     </form>
-    <p><a href="views/login.php">Voltar ao Login</a></p>
+    <p><a href="../login.php">Voltar ao Login</a></p>
 </body>
 </html>
+

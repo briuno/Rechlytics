@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         $tempo_restante = $_SESSION['tentativas_login'][$email]['tempo'] + $tempo_bloqueio - time();
         if ($tempo_restante > 0) {
             $_SESSION['erro_login'] = "Muitas tentativas falhas! Aguarde " . ceil($tempo_restante / 60) . " minutos.";
-            header("Location: views/login.php");
+            header("Location: ../views/login.php");
             exit();
         } else {
             unset($_SESSION['tentativas_login'][$email]); // Resetar tentativas após o tempo de bloqueio
@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         // Verificar se a conta foi ativada
         if ($email_verificado == 0) {
             $_SESSION['erro_login'] = "Conta não ativada. Verifique seu e-mail.";
-            header("Location: views/login.php");
+            header("Location: ../views/login.php");
             exit();
         }
 
@@ -69,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
             // Redirecionar para a tela de verificação 2FA
             $_SESSION['usuario_2fa'] = $id;
-            header("Location: views/auth/verificar_2fa.php");
+            header("Location: ../views/auth/verificar_2fa.php");
             exit();
         } else {
             $_SESSION['erro_login'] = "Usuário ou senha inválidos!";
@@ -90,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         $_SESSION['erro_login'] = "Muitas tentativas falhas! Tente novamente em 15 minutos.";
     }
 
-    header("Location: views/login.php");
+    header("Location: ../views/login.php");
     exit();
 }
 ?>
