@@ -12,12 +12,12 @@ if (!isset($_GET['token']) || empty($_GET['token'])) {
 $token = htmlspecialchars($_GET['token'], ENT_QUOTES, 'UTF-8');
 
 // Verificar se o token existe e ainda é válido
-$stmt = $conn->prepare("SELECT id FROM usuarios WHERE reset_token = ? AND reset_token_expira > NOW()");
+$stmt = $conn->prepare("SELECT id FROM usuarios WHERE BINARY reset_token = ? AND reset_token_expira > NOW()");
 $stmt->bind_param("s", $token);
 $stmt->execute();
 $stmt->store_result();
 
-if ($stmt->num_rows == 0) {
+if ($stmt->num_rows === 0) {
     die("<p style='color: red;'>Token inválido ou expirado.</p>");
 }
 
