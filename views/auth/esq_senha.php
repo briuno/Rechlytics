@@ -1,48 +1,60 @@
 <?php
 session_start();
 include __DIR__ . '/../../config/db.php';
-include __DIR__ . '/../../controllers/email.php';
+
+// Caminho base dinâmico com domínio correto
+$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
+
+if (!isset($_GET['token']) || empty($_GET['token'])) {
+    die("<p style='color: red;'>Token inválido.</p>");
+}
+
+$token = trim($_GET['token']); // Remove espaços extras
+
+// Depuração: Imprimir token recebido
+echo "<p>Token recebido: " . htmlspecialchars($token) . "</p>";
+
+// Verificar se o token existe e ainda é válido
+$stmt = $conn->prepare("SELECT id, reset_token, reset_token_expira FROM usuarios WHERE reset_token = ? AND reset_token_expira > NOW()");
+$stmt->bind_param("s", $token);
+$stmt->execute();
+$stmt->store_result();
+$stmt->bind_result($usuario_id, $reset_token, $reset_token_expira);
+$stmt->fetch();
+
+// Depuração: Verificar se o token armazenado é exatamente igual ao recebido
+echo "<p>Token no banco: " . htmlspecialchars($reset_token) . "</p>";
+echo "<p>Expira em: " . htmlspecialchars($reset_token_expira) . "</p>";
+
+if ($stmt->num_rows === 0 || strcmp($reset_token, $token) !== 0) {
+    echo "<p style='color: red;'>Token inválido ou expirado.</p>";
+    die();
+}
+
+$stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
-    $email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); // Prevenção contra XSS
+    $nova_senha = trim($_POST['senha']);
+    $confirma_senha = trim($_POST['confirma_senha']);
 
-    // Verificar se o e-mail existe no banco
-    $stmt = $conn->prepare("SELECT id FROM usuarios WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($usuario_id);
-        $stmt->fetch();
-        $stmt->close();
-
-        // Criar um token seguro e definir validade (30 minutos)
-        $token = bin2hex(random_bytes(32));
-        $expira = date("Y-m-d H:i:s", strtotime("+30 minutes"));
-
-        // Armazenar o token e a expiração no banco
-        $stmt = $conn->prepare("UPDATE usuarios SET reset_token = ?, reset_token_expira = ? WHERE id = ?");
-        $stmt->bind_param("ssi", $token, $expira, $usuario_id);
-
-        if ($stmt->execute()) {
-            // Enviar e-mail com link de redefinição
-            $reset_link = "https://rechlytics.com/views/auth/redefinir_senha.php?token=$token";
-            $assunto = "Redefinição de Senha - Rechlytics";
-            $mensagem = "Olá,\n\nVocê solicitou a redefinição de sua senha. Clique no link abaixo para criar uma nova senha:\n\n$reset_link\n\nEste link expirará em 30 minutos.\n\nSe você não solicitou essa alteração, ignore este e-mail.\n\nAtenciosamente,\nEquipe Rechlytics";
-            enviarEmail($email, $assunto, $mensagem);
-
-            $_SESSION['msg'] = "Um e-mail foi enviado para redefinir sua senha.";
-        } else {
-            $_SESSION['msg'] = "Erro ao processar a solicitação. Tente novamente.";
-        }
+    // Verificar se as senhas coincidem
+    if ($nova_senha !== $confirma_senha) {
+        $_SESSION['msg'] = "⚠ As senhas não coincidem!";
+    } elseif (strlen($nova_senha) < 8) {
+        $_SESSION['msg'] = "⚠ A senha deve ter pelo menos 8 caracteres!";
     } else {
-        $_SESSION['msg'] = "Se esse e-mail estiver cadastrado, um link será enviado.";
-    }
+        // Criar hash seguro da senha
+        $senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
 
-    header("Location: ../auth/esq_senha.php");
-    exit();
+        // Atualizar a senha e remover o token
+        $stmt = $conn->prepare("UPDATE usuarios SET senha = ?, reset_token = NULL, reset_token_expira = NULL WHERE id = ?");
+        $stmt->bind_param("si", $senha_hash, $usuario_id);
+        $stmt->execute();
+
+        $_SESSION['msg'] = "✅ Senha redefinida com sucesso! Faça login.";
+        header("Location: $base_url/views/login.php");
+        exit();
+    }
 }
 ?>
 
@@ -50,22 +62,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Esqueci Minha Senha - Rechlytics</title>
+    <title>Redefinir Senha - Rechlytics</title>
 </head>
 <body>
-    <h2>Recuperação de Senha</h2>
+    <h2>🔑 Redefinir Senha</h2>
+    
     <?php
     if (isset($_SESSION['msg'])) {
-        echo "<p style='color: green;'>" . $_SESSION['msg'] . "</p>";
+        echo "<p style='color: red;'>" . $_SESSION['msg'] . "</p>";
         unset($_SESSION['msg']);
     }
     ?>
-    <form action="../auth/esq_senha.php" method="POST">
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        <button type="submit">Enviar Link</button>
+    
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?token=' . urlencode($token); ?>" method="POST">
+        <label>Nova Senha:</label>
+        <input type="password" name="senha" required minlength="8">
+        
+        <label>Confirme a Senha:</label>
+        <input type="password" name="confirma_senha" required minlength="8">
+
+        <button type="submit">Redefinir Senha</button>
     </form>
-    <p><a href="../login.php">Voltar ao Login</a></p>
+
+    <p><a href="<?php echo $base_url; ?>/views/login.php">🔙 Voltar ao Login</a></p>
 </body>
 </html>
-

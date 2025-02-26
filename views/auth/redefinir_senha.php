@@ -5,31 +5,47 @@ include __DIR__ . '/../../config/db.php';
 // Caminho base dinâmico com domínio correto
 $base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
 
+// Verifica se um token foi passado na URL
 if (!isset($_GET['token']) || empty($_GET['token'])) {
-    die("<p style='color: red;'>Token inválido.</p>");
+    die("<p style='color: red;'>❌ Token inválido.</p>");
 }
 
-$token = htmlspecialchars($_GET['token'], ENT_QUOTES, 'UTF-8');
+$token = trim($_GET['token']); // Remove espaços extras
 
-// Verificar se o token existe e ainda é válido
-$stmt = $conn->prepare("SELECT id FROM usuarios WHERE BINARY reset_token = ? AND reset_token_expira > NOW()");
+// Depuração: Exibir token recebido
+echo "<p>🔍 Token recebido (GET): |" . bin2hex($token) . "|</p>";
+
+// Buscar o token no banco de dados
+$stmt = $conn->prepare("SELECT id, reset_token, reset_token_expira FROM usuarios WHERE reset_token = ? AND reset_token_expira > NOW()");
 $stmt->bind_param("s", $token);
 $stmt->execute();
 $stmt->store_result();
+$stmt->bind_result($usuario_id, $reset_token, $reset_token_expira);
+$stmt->fetch();
 
+// Depuração: Exibir informações do banco
+echo "<p>📌 Token no banco: |" . ($reset_token ? bin2hex($reset_token) : "NULL") . "|</p>";
+echo "<p>⏳ Expira em: " . ($reset_token_expira ? htmlspecialchars($reset_token_expira) : "NULL") . "</p>";
+
+// Verificação avançada dos tokens
 if ($stmt->num_rows === 0) {
-    die("<p style='color: red;'>Token inválido ou expirado.</p>");
+    echo "<p style='color: red;'>❌ Nenhuma linha encontrada com esse token!</p>";
+    die();
+} elseif ($token !== $reset_token) {
+    echo "<p style='color: red;'>⚠ Os tokens NÃO coincidem!</p>";
+    die();
+} elseif (strtotime($reset_token_expira) < time()) {
+    echo "<p style='color: red;'>⏳ Token expirado!</p>";
+    die();
 }
 
-$stmt->bind_result($usuario_id);
-$stmt->fetch();
 $stmt->close();
 
+// Processo de redefinição de senha
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nova_senha = trim($_POST['senha']);
     $confirma_senha = trim($_POST['confirma_senha']);
 
-    // Verificar se as senhas coincidem
     if ($nova_senha !== $confirma_senha) {
         $_SESSION['msg'] = "⚠ As senhas não coincidem!";
     } elseif (strlen($nova_senha) < 8) {
@@ -66,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     ?>
     
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?token=' . htmlspecialchars($token); ?>" method="POST">
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?token=' . urlencode($token); ?>" method="POST">
         <label>Nova Senha:</label>
         <input type="password" name="senha" required minlength="8">
         
