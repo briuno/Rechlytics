@@ -90,59 +90,6 @@ CREATE TABLE logs (
 ```
 ---
 
-## 📌 Estrutura de Pastas
-
-📂 **Rechlytics/** _(Diretório principal)_  
-│── 📂 **assets/** _(Futuramente para armazenar CSS, JS, imagens)_  
-│  
-│── 📂 **config/** _(Configurações e Banco de Dados)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `config.php` _(Configurações gerais do sistema)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `db.php` _(Configuração do MySQL)_  
-│  
-│── 📂 **controllers/** _(Regras de Negócio, Login, Segurança, Chat)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `atualizar_senha.php` _(Processo de atualização de senha)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `auth.php` _(Processo de login e autenticação)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `email.php` _(Envio de e-mails com PHPMailer)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `get_mensagens.php` _(Recuperação de mensagens do chat)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `log.php` _(Registro de logs do sistema)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `session_check.php` _(Verifica se o usuário está logado)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `session_check_admin.php` _(Verifica se o usuário é admin)_  
-│  
-│── 📂 **vendor/** _(Dependências instaladas pelo Composer)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── 📂 `composer/`  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── 📂 `phpmailer/` _(Biblioteca de e-mails)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `autoload.php` _(Carregamento automático de classes)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `composer.json` _(Gerenciamento de dependências)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `composer.lock` _(Controle de versões)_  
-│  
-│── 📂 **views/** _(Telas visíveis para os usuários)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `index.php` _(Página inicial)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `login.php` _(Tela de login)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `cadastro.php` _(Tela de cadastro)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `dashboard.php` _(Painel do Cliente)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `perfil.php` _(Edição de perfil)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `chat.php` _(Chat com suporte)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `ver_dashboard.php` _(Exibição do dashboard)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `logout.php` _(Encerrar sessão)_  
-│  
-│── 📂 **views/admin/** _(Área administrativa)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `admin_dashboard.php` _(Painel Admin)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `admin_dashboards.php` _(Gerenciar dashboards)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `admin_logs.php` _(Ver auditoria de logs)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `admin_chat.php` _(Gerenciar mensagens dos clientes)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `admin_editar_usuario.php` _(Editar usuários)_  
-│  
-│── 📂 **views/auth/** _(Autenticação e segurança)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `ativar_conta.php` _(Ativação de conta)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `esq_senha.php` _(Esqueci minha senha)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `nova_senha.php` _(Redefinir senha)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `redefinir_senha.php` _(Confirmação de senha)_  
-│&nbsp;&nbsp;&nbsp;&nbsp; ├── `verificar_2fa.php` _(Autenticação em dois fatores)_  
-│  
-│── `README.md` _(Este arquivo)_  
-
----
-
 ## 📌 Instalação e Configuração
 
 ### **1️⃣ Clone o Repositório**
