@@ -90,36 +90,53 @@ CREATE TABLE logs (
 ```
 ---
 
-## 📌 Instalação e Configuração
+## 📌 Estrutura de Diretórios
 
-### **1️⃣ Clone o Repositório**
-```bash
-git clone https://github.com/seu-usuario/Rechlytics.git
-cd Rechlytics
 ```
-
-### **2️⃣ Instale as Dependências (PHPMailer)**
-```bash
-composer install
-```
-
-### **3️⃣ Configure o Banco de Dados**  
-- Importe o arquivo `banco.sql` no **MySQL**.  
-- Atualize as credenciais no `config/db.php`.  
-
-### **4️⃣ Inicie o Servidor Local**
-```bash
-php -S localhost:8000 -t public
-```
-
-### **5️⃣ Acesse no Navegador**
-```plaintext
-http://localhost:8000/views/login.php
+Rechlytics/
+├── index.php          # Página inicial (login)
+├── README.md          # Documentação do projeto
+│
+├── config/            # Configurações gerais do sistema
+│   ├── config.php     # Configurações do sistema
+│   └── db.php         # Conexão com o banco de dados
+│
+├── controllers/       # Lógica do backend (autenticação, emails, logs, sessões)
+│   ├── auth.php       # Autenticação de usuários
+│   ├── email.php      # Envio de emails com PHPMailer
+│   ├── get_mensagens.php  # Busca mensagens do chat
+│   ├── log.php        # Gerenciamento de logs do sistema
+│   ├── session_check.php  # Validação de sessão para usuários
+│   └── session_check_admin.php  # Validação de sessão para admins
+│
+├── vendor/            # Dependências do Composer (PHPMailer, etc.)
+│
+└── views/             # Páginas da interface do usuário
+    ├── auth/          # Páginas de autenticação
+    │   ├── ativar_conta.php
+    │   ├── esq_senha.php
+    │   ├── redefinir_senha.php
+    │   ├── verificar_2fa.php
+    │
+    ├── admin/         # Páginas específicas do administrador
+    │   ├── admin_chat.php
+    │   ├── admin_dashboard.php
+    │   ├── admin_dashboards.php
+    │   ├── admin_editar_usuario.php
+    │   ├── admin_logs.php
+    │
+    ├── cadastro.php
+    ├── chat.php
+    ├── dashboard.php
+    ├── login.php
+    ├── logout.php
+    ├── perfil.php
+    ├── ver_dashboard.php
 ```
 
 ---
 
-## 📌 Considerações Finais  
 O **Rechlytics** está pronto para ser expandido e adaptado conforme necessário. Caso precise de mais melhorias ou funcionalidades, basta abrir uma **issue** no repositório! 🚀  
 
-Se precisar de suporte, me avise! 😊  
+Se precisar de suporte, me avise! 😊
+
