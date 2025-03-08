@@ -316,7 +316,6 @@ h1 span {
 
 <script>
 
-
 var spanText = function spanText(text) {
   var string = text.innerText;
   var spaned = '';
