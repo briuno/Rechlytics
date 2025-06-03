@@ -1,6 +1,6 @@
 # Rechlytics 🚀📊
 
-**Rechlytics** é um sistema web desenvolvido para disponibilizar **dashboards interativos** para clientes, a partir de dados tratados e gerados no **Power BI**.  
+*Rechlytics* é um sistema web desenvolvido para disponibilizar **dashboards interativos** para clientes, a partir de dados tratados e gerados no **Power BI**.  
 
 Os clientes podem acessar seus dashboards exclusivos, interagir com gráficos, baixar relatórios e se comunicar com administradores via chat.  
 Os administradores podem gerenciar clientes, dashboards, responder mensagens e monitorar logs de auditoria.
