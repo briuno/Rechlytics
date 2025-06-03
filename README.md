@@ -88,6 +88,15 @@ CREATE TABLE logs (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );
 ```
+
+### 🔹 Criando as tabelas automaticamente
+Para criar todas as tabelas necessárias em uma nova instalação, execute o script:
+
+```bash
+php scripts/create_tables.php
+```
+
+O script verifica e cria cada tabela somente se ela ainda não existir.
 ---
 
 ## 📌 Estrutura de Diretórios
@@ -109,6 +118,9 @@ Rechlytics/
 │   ├── session_check.php  # Validação de sessão para usuários
 │   └── session_check_admin.php  # Validação de sessão para admins
 │
+├── scripts/          # Scripts auxiliares
+│   └── create_tables.php  # Criação das tabelas
+
 ├── vendor/            # Dependências do Composer (PHPMailer, etc.)
 │
 └── views/             # Páginas da interface do usuário
