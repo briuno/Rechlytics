@@ -1,9 +1,9 @@
 <?php
 // Configurações do banco de dados
-$servername = "193.203.175.215";
-$username = "u332555040_rechlytics_use";
-$password = "Fo27&ofDS~";
-$dbname = "u332555040_rechlytics_db";
+$servername = "45.151.120.2";
+$username = "u332555040_bancodedados";
+$password = "K2|mU~!W;";
+$dbname = "u332555040_bancodedados";
 date_default_timezone_set('America/Sao_Paulo');
 
 
