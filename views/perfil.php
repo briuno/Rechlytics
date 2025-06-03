@@ -4,7 +4,7 @@ include __DIR__ . '/../controllers/session_check.php';
 include __DIR__ . '/../config/db.php';
 include __DIR__ . '/../controllers/log.php';
 
-// Caminho base dinâmico com domínio correto
+// Caminho base dinâmico com domínio corret
 $base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
 
 if (!isset($_SESSION['usuario_id'])) {
