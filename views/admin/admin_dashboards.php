@@ -84,23 +84,15 @@ $result = $conn->query("SELECT dashboards.id, dashboards.nome, dashboards.url, u
                 <strong><?php echo htmlspecialchars($row['nome']); ?></strong> - Cliente: <?php echo htmlspecialchars($row['cliente']); ?>
                 <br> <a href="<?php echo htmlspecialchars($row['url']); ?>" target="_blank">Ver Dashboard</a>
                 <br>
-                <button onclick="editarDashboard('<?php echo $row['id']; ?>', '<?php echo $row['usuario_id']; ?>', '<?php echo htmlspecialchars($row['nome']); ?>', '<?php echo htmlspecialchars($row['url']); ?>')">Editar</button>
-                <form action="<?php echo $base_url; ?>/views/admin/admin_dashboards.php" method="POST" style="display:inline;">
+                <button>Editar</button>
+                <form action="<?php echo $base_url; ?>/views/admin/admin_dashboards.php" method="POST">
                     <input type="hidden" name="dashboard_id" value="<?php echo $row['id']; ?>">
-                    <button type="submit" name="excluir" onclick="return confirm('Tem certeza que deseja excluir este dashboard?');">Excluir</button>
+                    <button type="submit" name="excluir">Excluir</button>
                 </form>
             </li>
         <?php endwhile; ?>
     </ul>
 
-    <script>
-        function editarDashboard(id, usuarioId, nome, url) {
-            document.getElementById('dashboard_id').value = id;
-            document.getElementById('usuario_id').value = usuarioId;
-            document.getElementById('nome').value = nome;
-            document.getElementById('url').value = url;
-        }
-    </script>
 
     <p><a href="<?php echo $base_url; ?>/views/admin/admin_dashboard.php">Voltar</a></p>
 </body>

@@ -53,7 +53,7 @@ $stmt->fetch();
     <h2>Meu Perfil</h2>
 
     <?php if (isset($_SESSION['msg'])): ?>
-        <p style="color: green;"><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>
+        <p><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>
     <?php endif; ?>
 
     <p><strong>Nome:</strong> <?php echo htmlspecialchars($nome); ?></p>

@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     <?php if ($cliente_id): ?>
         <h3>Histórico de Mensagens</h3>
 
-        <div style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
+        <div>
             <?php while ($row = $mensagens->fetch_assoc()): ?>
                 <p>
                     <strong><?php echo ($row['remetente'] === 'cliente') ? "Cliente" : "Suporte"; ?>:</strong>

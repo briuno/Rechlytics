@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>Editar Usuário</h2>
 
     <?php if (isset($_SESSION['msg'])): ?>
-        <p style="color: red;"><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>
+        <p><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>
     <?php endif; ?>
 
     <form action="<?php echo $base_url; ?>/views/admin/admin_editar_usuario.php?id=<?php echo $usuario_id; ?>" method="POST">

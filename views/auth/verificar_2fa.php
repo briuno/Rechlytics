@@ -13,18 +13,6 @@ unset($_SESSION['erro_2fa']);
 <head>
     <meta charset="UTF-8">
     <title>Verificação 2FA – Rechlytics</title>
-    <style>
-        /* Estilo minimal para manter a consistência */
-        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-        .container { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 6px;
-                     box-shadow: 0 2px 4px rgba(0,0,0,.1); }
-        h2 { margin-bottom: 16px; }
-        .erro { color: #c00; margin-bottom: 12px; }
-        input, button { width: 100%; padding: 8px; margin: 6px 0 12px; border-radius: 4px; }
-        input { border: 1px solid #ccc; }
-        button { background: #28a745; color: #fff; border: none; cursor: pointer; }
-        button:hover { background: #1e7e34; }
-    </style>
 </head>
 <body>
     <div class="container">

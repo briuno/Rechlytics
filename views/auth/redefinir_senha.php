@@ -7,7 +7,7 @@ $base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERV
 
 // Verifica se um token foi passado na URL
 if (!isset($_GET['token']) || empty($_GET['token'])) {
-    die("<p style='color: red;'>❌ Token inválido.</p>");
+    die("<p>❌ Token inválido.</p>");
 }
 
 $token = trim($_GET['token']); // Remove espaços extras
@@ -23,7 +23,7 @@ $result = $stmt->get_result();
 
 // Depuração: verificar se encontrou o usuário
 if ($result->num_rows === 0) {
-    die("<p style='color: red;'>❌ Token não encontrado no banco.</p>");
+    die("<p>❌ Token não encontrado no banco.</p>");
 }
 
 // Obtém o ID do usuário
@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php
     if (isset($_SESSION['msg'])) {
-        echo "<p style='color: red;'>" . htmlspecialchars($_SESSION['msg']) . "</p>";
+        echo "<p>" . htmlspecialchars($_SESSION['msg']) . "</p>";
         unset($_SESSION['msg']);
     }
     ?>

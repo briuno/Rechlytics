@@ -35,42 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Chat com Suporte - Rechlytics</title>
-    <script>
-    function atualizarMensagens() {
-        fetch('<?php echo $base_url; ?>/controllers/get_mensagens.php')
-            .then(response => response.json())
-            .then(data => {
-                let chatBox = document.getElementById("chat-box");
-                chatBox.innerHTML = "";
-
-                if (data.erro) {
-                    chatBox.innerHTML = `<p style="color: red;">${data.erro}</p>`;
-                    return;
-                }
-
-                if (data.mensagem) {
-                    chatBox.innerHTML = `<p>${data.mensagem}</p>`;
-                    return;
-                }
-
-                data.forEach(msg => {
-                    chatBox.innerHTML += `<p><strong>${msg.remetente}:</strong> ${msg.mensagem} <small>(${msg.data_envio})</small></p>`;
-                });
-
-                chatBox.scrollTop = chatBox.scrollHeight;
-            })
-            .catch(error => console.error("Erro ao buscar mensagens:", error));
-    }
-
-    setInterval(atualizarMensagens, 5000); // Atualiza a cada 5 segundos
-    window.onload = atualizarMensagens;
-</script>
 
 </head>
 <body>
     <h2>Chat com Suporte</h2>
 
-    <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;"></div>
+    <div id="chat-box"></div>
 
     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
         <label>Mensagem:</label>
