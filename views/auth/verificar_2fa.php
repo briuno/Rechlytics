@@ -1,71 +1,47 @@
 <?php
+// Rechlytics/views/auth/verificar_2fa.php
+
 session_start();
-include __DIR__ . '/../../config/db.php';
-include __DIR__ . '/../../controllers/log.php';
 
-// Caminho base dinâmico com domínio correto
-$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
-
+// Se não existir sessão de usuário_2fa, redireciona ao login
 if (!isset($_SESSION['usuario_2fa'])) {
-    header("Location: $base_url/views/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
-$usuario_id = $_SESSION['usuario_2fa'];
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $codigo_digitado = trim($_POST['codigo']);
-
-    // Verificar o código no banco
-    $stmt = $conn->prepare("SELECT two_factor_code, two_factor_expira, tipo FROM usuarios WHERE id = ?");
-    $stmt->bind_param("i", $usuario_id);
-    $stmt->execute();
-    $stmt->store_result();
-    $stmt->bind_result($codigo_armazenado, $expira, $tipo_usuario);
-    $stmt->fetch();
-
-    if ($stmt->num_rows > 0 && $codigo_digitado === $codigo_armazenado && strtotime($expira) > time()) {
-        // Autenticação concluída
-        $_SESSION['usuario_id'] = $usuario_id;
-        $_SESSION['usuario_tipo'] = $tipo_usuario;
-        unset($_SESSION['usuario_2fa']);
-
-        // Limpar código 2FA no banco
-        $stmt = $conn->prepare("UPDATE usuarios SET two_factor_code = NULL, two_factor_expira = NULL WHERE id = ?");
-        $stmt->bind_param("i", $usuario_id);
-        $stmt->execute();
-
-        registrarLog($conn, $usuario_id, "Autenticação 2FA bem-sucedida");
-
-        // Redirecionar conforme o tipo de usuário
-        $destino = ($tipo_usuario === 'admin') ? "$base_url/views/admin/admin_dashboard.php" : "$base_url/views/dashboard.php";
-        header("Location: $destino");
-        exit();
-    } else {
-        $_SESSION['erro_2fa'] = "Código inválido ou expirado!";
-    }
-}
+$mensagem_erro = $_SESSION['erro_2fa'] ?? '';
+unset($_SESSION['erro_2fa']);
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Verificação 2FA - Rechlytics</title>
+    <title>Verificação 2FA – Rechlytics</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,.1); }
+        h2 { margin-bottom: 16px; }
+        input[type="text"] { width: 100%; padding: 8px; margin: 6px 0 12px; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background: #28a745; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #1e7e34; }
+        .erro { color: #c00; margin-bottom: 12px; }
+    </style>
 </head>
 <body>
-    <h2>Verificação 2FA</h2>
+    <div class="container">
+        <h2>Digite seu Código 2FA</h2>
 
-    <?php if (isset($_SESSION['erro_2fa'])): ?>
-        <p style="color: red;"><?php echo $_SESSION['erro_2fa']; unset($_SESSION['erro_2fa']); ?></p>
-    <?php endif; ?>
+        <?php if ($mensagem_erro): ?>
+            <div class="erro"><?php echo htmlspecialchars($mensagem_erro); ?></div>
+        <?php endif; ?>
 
-    <form action="" method="POST">
-        <label>Digite o código recebido por e-mail:</label>
-        <input type="text" name="codigo" required>
-        <button type="submit">Confirmar</button>
-    </form>
+        <form action="../controllers/validar_2fa.php" method="POST">
+            <label for="codigo_2fa">Código 2FA:</label>
+            <input type="text" id="codigo_2fa" name="codigo_2fa" required pattern="\d{6}" 
+                   title="Insira o código de 6 dígitos enviado por e-mail">
 
-    <p><a href="<?php echo $base_url; ?>/views/login.php">Voltar</a></p>
+            <button type="submit" name="verificar_2fa">Verificar</button>
+        </form>
+    </div>
 </body>
 </html>
