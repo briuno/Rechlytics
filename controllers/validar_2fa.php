@@ -30,6 +30,7 @@ $stmt->bind_param("i", $idUsuario);
 $stmt->execute();
 $stmt->bind_result($codigoArmazenado, $expira2fa, $usuarioNome, $usuarioTipo);
 $stmt->fetch();
+$stmt->close();
 
 // Verifica se expirou
 if (new DateTime() > new DateTime($expira2fa)) {
