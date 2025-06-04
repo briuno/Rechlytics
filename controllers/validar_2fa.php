@@ -4,8 +4,15 @@
 session_start();
 include __DIR__ . '/../config/db.php';
 
+// Caminho base dinâmico apontando para a raiz do projeto
+$base_url = rtrim(
+    (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] .
+    dirname($_SERVER['SCRIPT_NAME'], 2),
+    '/'
+);
+
 if (!isset($_SESSION['usuario_2fa']) || !isset($_POST['codigo_2fa'])) {
-    header("Location: ../views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -27,7 +34,7 @@ $stmt->fetch();
 if (new DateTime() > new DateTime($expira2fa)) {
     $_SESSION['erro_2fa'] = "Código expirado. Solicite novo login.";
     unset($_SESSION['usuario_2fa']);
-    header("Location: ../views/login.php");
+    header("Location: $base_url/views/login.php");
     exit();
 }
 
@@ -37,11 +44,11 @@ if ($codigoPostado === $codigoArmazenado) {
     $_SESSION['usuario_id']   = $idUsuario;
     $_SESSION['usuario_tipo'] = 'user'; // ou busque do BD, se precisar
     unset($_SESSION['usuario_2fa']);
-    header("Location: ../ver_dashboard.php");
+    header("Location: $base_url/views/dashboard.php");
     exit();
 } else {
     $_SESSION['erro_2fa'] = "Código inválido. Tente novamente.";
-    header("Location: ../views/auth/verificar_2fa.php");
+    header("Location: $base_url/views/auth/verificar_2fa.php");
     exit();
 }
 ?>
