@@ -96,7 +96,8 @@ Rechlytics/
 │   ├── get_mensagens.php
 │   ├── log.php
 │   ├── session_check.php
-│   └── session_check_admin.php
+│   ├── session_check_admin.php
+│   └── validar_2fa.php
 ├── vendor/
 └── views/
     ├── auth/
