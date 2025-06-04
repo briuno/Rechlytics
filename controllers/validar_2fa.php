@@ -3,6 +3,7 @@
 
 session_start();
 include __DIR__ . '/../config/db.php';
+include __DIR__ . '/log.php';
 
 // Caminho base dinâmico apontando para a raiz do projeto
 $base_url = rtrim(
@@ -45,6 +46,9 @@ if ($codigoPostado === $codigoArmazenado) {
     $_SESSION['usuario_nome'] = $usuarioNome;
     $_SESSION['usuario_tipo'] = $usuarioTipo;
     unset($_SESSION['usuario_2fa']);
+
+    // Registra log de login
+    registrarLog($conn, $idUsuario, 'Login realizado');
 
     if ($usuarioTipo === 'admin') {
         header("Location: $base_url/views/admin/admin_dashboard.php");
