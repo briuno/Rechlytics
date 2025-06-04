@@ -77,14 +77,14 @@ CREATE TABLE dashboards (
 );
 ```
 
-### **🔹 Tabela `mensagens` (Armazena o chat entre cliente e administrador)**
+### **🔹 Tabela `chat_mensagens` (Armazena o chat entre cliente e administrador)**
 ```sql
-CREATE TABLE mensagens (
+CREATE TABLE chat_mensagens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     mensagem TEXT NOT NULL,
+    remetente ENUM('cliente', 'admin') NOT NULL,
     data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lida TINYINT(1) DEFAULT 0,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 ```
