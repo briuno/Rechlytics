@@ -51,8 +51,19 @@ CREATE TABLE usuarios (
     email_verificado TINYINT(1) DEFAULT 0,
     two_factor_code VARCHAR(6) NULL,
     two_factor_expira DATETIME NULL,
+    reset_token VARCHAR(64) NULL,
+    reset_token_expira DATETIME NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+```
+
+Se você já possui a tabela `usuarios` criada sem as colunas de recuperação de senha,
+adicione-as executando:
+
+```sql
+ALTER TABLE usuarios
+    ADD reset_token VARCHAR(64) NULL,
+    ADD reset_token_expira DATETIME NULL;
 ```
 
 ### **🔹 Tabela `dashboards` (Gerencia os painéis do Power BI por cliente)**
