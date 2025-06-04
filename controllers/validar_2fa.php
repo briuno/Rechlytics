@@ -19,15 +19,15 @@ if (!isset($_SESSION['usuario_2fa']) || !isset($_POST['codigo_2fa'])) {
 $idUsuario = $_SESSION['usuario_2fa'];
 $codigoPostado = trim($_POST['codigo_2fa']);
 
-// Buscar no banco o código e expiração
-$stmt = $conn->prepare("
-    SELECT two_factor_code, two_factor_expira 
-    FROM usuarios 
-    WHERE id = ?
-");
+// Buscar no banco o código, expiração, nome e tipo do usuário
+$stmt = $conn->prepare(
+    "SELECT two_factor_code, two_factor_expira, nome, tipo
+    FROM usuarios
+    WHERE id = ?"
+);
 $stmt->bind_param("i", $idUsuario);
 $stmt->execute();
-$stmt->bind_result($codigoArmazenado, $expira2fa);
+$stmt->bind_result($codigoArmazenado, $expira2fa, $usuarioNome, $usuarioTipo);
 $stmt->fetch();
 
 // Verifica se expirou
@@ -42,9 +42,15 @@ if (new DateTime() > new DateTime($expira2fa)) {
 if ($codigoPostado === $codigoArmazenado) {
     // Autenticação 2FA bem-sucedida
     $_SESSION['usuario_id']   = $idUsuario;
-    $_SESSION['usuario_tipo'] = 'user'; // ou busque do BD, se precisar
+    $_SESSION['usuario_nome'] = $usuarioNome;
+    $_SESSION['usuario_tipo'] = $usuarioTipo;
     unset($_SESSION['usuario_2fa']);
-    header("Location: $base_url/views/dashboard.php");
+
+    if ($usuarioTipo === 'admin') {
+        header("Location: $base_url/views/admin/admin_dashboard.php");
+    } else {
+        header("Location: $base_url/views/dashboard.php");
+    }
     exit();
 } else {
     $_SESSION['erro_2fa'] = "Código inválido. Tente novamente.";
