@@ -42,8 +42,8 @@ $result = $stmt->get_result();
         <ul>
             <?php while ($row = $result->fetch_assoc()): ?>
                 <li>
-                    <a href="<?php echo $base_url; ?>/ver_dashboard.php?id=<?php echo htmlspecialchars($row['id']); ?>">
-                        <?php echo htmlspecialchars($row['nome']); ?>
+                    <a href="<?php echo $base_url; ?>/views/ver_dashboard.php?id=<?php echo htmlspecialchars($row['id']); ?>">
+                        <?php echo htmlspecialchars(string: $row['nome']); ?>
                     </a>
                 </li>
             <?php endwhile; ?>

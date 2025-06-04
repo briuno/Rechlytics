@@ -10,7 +10,12 @@ include __DIR__ . '/../../controllers/log.php';
 include __DIR__ . '/../../controllers/email.php';
 
 // Caminho base dinâmico com domínio correto
-$base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 3), '/');
+$base_url = rtrim(
+    (isset($_SERVER['HTTPS']) ? "https" : "http") .
+    "://" . $_SERVER['HTTP_HOST'] .
+    dirname($_SERVER['SCRIPT_NAME'], 3),
+    '/'
+);
 
 // Verifica se o usuário é admin
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
@@ -19,32 +24,49 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'admin') {
 }
 
 // Buscar clientes que têm mensagens
-$clientes = $conn->query("SELECT DISTINCT usuarios.id, usuarios.nome, usuarios.email 
-                          FROM chat_mensagens 
-                          JOIN usuarios ON chat_mensagens.usuario_id = usuarios.id");
+$clientes = $conn->query(
+    "SELECT DISTINCT u.id, u.nome, u.email
+     FROM chat_mensagens AS cm
+     JOIN usuarios AS u ON cm.usuario_id = u.id
+     ORDER BY u.nome"
+);
 
 $cliente_id = isset($_GET['cliente_id']) ? intval($_GET['cliente_id']) : null;
 
 // Buscar mensagens do cliente selecionado
 $mensagens = [];
 if ($cliente_id) {
-    $stmt = $conn->prepare("SELECT mensagem, remetente, data_envio FROM chat_mensagens WHERE usuario_id = ? ORDER BY data_envio ASC");
+    $stmt = $conn->prepare(
+        "SELECT mensagem, remetente, data_envio
+         FROM chat_mensagens
+         WHERE usuario_id = ?
+         ORDER BY data_envio ASC"
+    );
     $stmt->bind_param("i", $cliente_id);
     $stmt->execute();
     $mensagens = $stmt->get_result();
+    $stmt->close();
 }
 
 // Enviar resposta e notificar o cliente por e-mail
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $cliente_id) {
     $mensagem = trim($_POST['mensagem']);
     $remetente = 'admin';
 
-    $stmt = $conn->prepare("INSERT INTO chat_mensagens (usuario_id, mensagem, remetente) VALUES (?, ?, ?)");
+    $stmt = $conn->prepare(
+        "INSERT INTO chat_mensagens (usuario_id, mensagem, remetente)
+         VALUES (?, ?, ?)"
+    );
     $stmt->bind_param("iss", $cliente_id, $mensagem, $remetente);
     $stmt->execute();
+    $stmt->close();
 
     // Registrar log
-    registrarLog($conn, $_SESSION['usuario_id'], "Respondeu no chat para o cliente ID: $cliente_id");
+    registrarLog(
+        $conn,
+        $_SESSION['usuario_id'],
+        "Respondeu no chat para o cliente ID: $cliente_id"
+    );
 
     // Buscar o e-mail do cliente
     $stmt = $conn->prepare("SELECT email FROM usuarios WHERE id = ?");
@@ -56,8 +78,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
 
     if (!empty($email_cliente)) {
         // Enviar notificação por e-mail
-        $assunto = "Nova resposta no chat - Rechlytics";
-        $mensagem_email = "Olá, você recebeu uma nova resposta no chat do suporte. Acesse o link abaixo para visualizar:\n\n$base_url/views/chat.php";
+        $assunto = "Nova resposta no chat – Rechlytics";
+        $mensagem_email = "Olá, você recebeu uma nova resposta no chat do suporte. "
+                        . "Acesse o link abaixo para visualizar:\n\n"
+                        . "$base_url/views/chat.php";
 
         enviarEmail($email_cliente, $assunto, $mensagem_email);
     }
@@ -71,7 +95,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Gestão de Chat - Rechlytics</title>
+    <title>Gestão de Chat – Rechlytics</title>
+    <style>
+        /* Estilização mínima */
+        #chat-box {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #CCC;
+            padding: 10px;
+            background-color: #F9F9F9;
+            margin-bottom: 20px;
+        }
+        .msg-cliente {
+            display: flex;
+            justify-content: flex-end;
+            margin: 8px 0;
+        }
+        .msg-suporte {
+            display: flex;
+            justify-content: flex-start;
+            margin: 8px 0;
+        }
+        .msg-conteudo {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 70%;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        .msg-cliente .msg-conteudo {
+            background-color: #D4EFDF; /* Verde claro */
+        }
+        .msg-suporte .msg-conteudo {
+            background-color: #FFFFFF; /* Branco */
+            border: 1px solid #DDD;
+        }
+        .msg-data {
+            font-size: 12px;
+            color: #777;
+            margin-top: 2px;
+            text-align: right;
+        }
+        .pendencia > a {
+            color: #C0392B; /* Vermelho corporativo */
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h2>Gestão de Chat</h2>
@@ -79,26 +149,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $cliente_id) {
     <h3>Selecionar Cliente:</h3>
     <ul>
         <?php while ($cliente = $clientes->fetch_assoc()): ?>
-            <li><a href="<?php echo $base_url; ?>/views/admin/admin_chat.php?cliente_id=<?php echo $cliente['id']; ?>"><?php echo htmlspecialchars($cliente['nome']); ?></a></li>
+            <?php
+                // Para cada cliente, obter o remetente da última mensagem
+                $stmtUlt = $conn->prepare(
+                    "SELECT remetente
+                     FROM chat_mensagens
+                     WHERE usuario_id = ?
+                     ORDER BY data_envio DESC
+                     LIMIT 1"
+                );
+                $stmtUlt->bind_param("i", $cliente['id']);
+                $stmtUlt->execute();
+                $stmtUlt->bind_result($ultimo_remetente);
+                $stmtUlt->fetch();
+                $stmtUlt->close();
+
+                // Se a última mensagem for do cliente, marca pendência
+                $pendencia = ($ultimo_remetente === 'cliente');
+            ?>
+            <li class="<?php echo $pendencia ? 'pendencia' : ''; ?>">
+                <a href="<?php echo $base_url; ?>/views/admin/admin_chat.php?cliente_id=<?php echo $cliente['id']; ?>">
+                    <?php if ($pendencia): ?>
+                        &#9888; <!-- Símbolo de alerta -->
+                    <?php endif; ?>
+                    <?php echo htmlspecialchars($cliente['nome'], ENT_QUOTES, 'UTF-8'); ?>
+                </a>
+            </li>
         <?php endwhile; ?>
     </ul>
 
     <?php if ($cliente_id): ?>
         <h3>Histórico de Mensagens</h3>
 
-        <div>
-            <?php while ($row = $mensagens->fetch_assoc()): ?>
-                <p>
-                    <strong><?php echo ($row['remetente'] === 'cliente') ? "Cliente" : "Suporte"; ?>:</strong>
-                    <?php echo htmlspecialchars($row['mensagem']); ?>
-                    <small>(<?php echo date("d/m/Y H:i", strtotime($row['data_envio'])); ?>)</small>
-                </p>
-            <?php endwhile; ?>
+        <!-- Contêiner com rolagem vertical (até 500px) -->
+        <div id="chat-box">
+            <?php if ($mensagens->num_rows === 0): ?>
+                <p style="text-align: center; color: #777;">Sem mensagens neste chat.</p>
+            <?php else: ?>
+                <?php while ($row = $mensagens->fetch_assoc()): ?>
+                    <?php
+                        $classe = ($row['remetente'] === 'cliente') ? 'msg-cliente' : 'msg-suporte';
+                        $quem    = ($row['remetente'] === 'cliente') ? 'Cliente' : 'Suporte';
+                        $dataFormatada = date("d/m/Y H:i", strtotime($row['data_envio']));
+                    ?>
+                    <div class="<?php echo $classe; ?>">
+                        <div class="msg-conteudo">
+                            <strong><?php echo $quem; ?>:</strong><br>
+                            <?php echo nl2br(htmlspecialchars($row['mensagem'], ENT_QUOTES, 'UTF-8')); ?>
+                            <div class="msg-data"><?php echo $dataFormatada; ?></div>
+                        </div>
+                    </div>
+                <?php endwhile; ?>
+            <?php endif; ?>
         </div>
 
         <form action="<?php echo $base_url; ?>/views/admin/admin_chat.php?cliente_id=<?php echo $cliente_id; ?>" method="POST">
-            <label>Mensagem:</label>
-            <textarea name="mensagem" required></textarea>
+            <label>Mensagem:</label><br>
+            <textarea name="mensagem" rows="4" cols="60" required></textarea><br><br>
             <button type="submit">Responder</button>
         </form>
     <?php else: ?>
