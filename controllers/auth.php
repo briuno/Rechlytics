@@ -6,7 +6,6 @@ include __DIR__ . '/../controllers/email.php';
 
 $limite_tentativas = 5;
 $tempo_bloqueio = 15 * 60; // 15 minutos
-$tempo_validade_2fa = 24 * 60 * 60; // 24 horas
 
 // Caminho base dinâmico
 $base_url = rtrim((isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'], 2), '/');
@@ -28,13 +27,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     }
 
     // Buscar usuário no banco
-    $stmt = $conn->prepare("SELECT id, nome, senha, tipo, email_verificado, two_factor_code, two_factor_expira, two_factor_valid_until FROM usuarios WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, nome, senha, tipo, email_verificado, two_factor_code, two_factor_expira FROM usuarios WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $nome, $hash_senha, $tipo, $email_verificado, $codigo_armazenado, $expira_2fa, $validade_2fa);
+        $stmt->bind_result($id, $nome, $hash_senha, $tipo, $email_verificado, $codigo_armazenado, $expira_2fa);
         $stmt->fetch();
 
         // Verificar se a conta foi ativada
@@ -46,23 +45,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
         // Verificar senha
         if (password_verify($senha, $hash_senha)) {
-            // Se o 2FA ainda for válido (24 horas), pular verificação
-            if (!empty($validade_2fa) && strtotime($validade_2fa) > time()) {
-                $_SESSION['usuario_id'] = $id;
-                $_SESSION['usuario_nome'] = $nome;
-                $_SESSION['usuario_tipo'] = $tipo;
-
-                // Redirecionar para dashboard correto
-                header("Location: " . ($tipo === 'admin' ? "$base_url/views/admin/admin_dashboard.php" : "$base_url/views/dashboard.php"));
-                exit();
-            }
+            // Sempre solicitar 2FA ao fazer login
 
             // Gerar novo código 2FA
             $codigo_2fa = rand(100000, 999999);
             $expira_2fa = date("Y-m-d H:i:s", strtotime("+10 minutes"));
 
-            // Atualizar código 2FA e validade no banco
-            $stmt = $conn->prepare("UPDATE usuarios SET two_factor_code = ?, two_factor_expira = ?, two_factor_valid_until = DATE_ADD(NOW(), INTERVAL 24 HOUR) WHERE id = ?");
+            // Atualizar código 2FA no banco
+            $stmt = $conn->prepare("UPDATE usuarios SET two_factor_code = ?, two_factor_expira = ? WHERE id = ?");
             $stmt->bind_param("ssi", $codigo_2fa, $expira_2fa, $id);
             $stmt->execute();
 

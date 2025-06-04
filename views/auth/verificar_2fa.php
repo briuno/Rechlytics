@@ -17,11 +17,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $codigo_digitado = trim($_POST['codigo']);
 
     // Verificar o código no banco
-    $stmt = $conn->prepare("SELECT two_factor_code, two_factor_expira, two_factor_valid_until, tipo FROM usuarios WHERE id = ?");
+    $stmt = $conn->prepare("SELECT two_factor_code, two_factor_expira, tipo FROM usuarios WHERE id = ?");
     $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
     $stmt->store_result();
-    $stmt->bind_result($codigo_armazenado, $expira, $validade_2fa, $tipo_usuario);
+    $stmt->bind_result($codigo_armazenado, $expira, $tipo_usuario);
     $stmt->fetch();
 
     if ($stmt->num_rows > 0 && $codigo_digitado === $codigo_armazenado && strtotime($expira) > time()) {
@@ -30,13 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['usuario_tipo'] = $tipo_usuario;
         unset($_SESSION['usuario_2fa']);
 
-        // Definir duração da autenticação 2FA por 24 horas
-        $validade_2fa = date("Y-m-d H:i:s", strtotime("+24 hours"));
-        $_SESSION['2fa_valid_until'][$usuario_id] = strtotime($validade_2fa);
-
-        // Atualizar validade do 2FA no banco de dados
-        $stmt = $conn->prepare("UPDATE usuarios SET two_factor_code = NULL, two_factor_expira = NULL, two_factor_valid_until = ? WHERE id = ?");
-        $stmt->bind_param("si", $validade_2fa, $usuario_id);
+        // Limpar código 2FA no banco
+        $stmt = $conn->prepare("UPDATE usuarios SET two_factor_code = NULL, two_factor_expira = NULL WHERE id = ?");
+        $stmt->bind_param("i", $usuario_id);
         $stmt->execute();
 
         registrarLog($conn, $usuario_id, "Autenticação 2FA bem-sucedida");
