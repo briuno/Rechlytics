@@ -13,4 +13,3 @@ $base_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . dirname
        <a href="<?php echo $base_url; ?>/views/cadastro.php">Cadastro</a></p>
 </body>
 </html>
-?>

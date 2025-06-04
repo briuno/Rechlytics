@@ -52,7 +52,7 @@ $result = $stmt->get_result();
         <p>Nenhum dashboard disponível.</p>
     <?php endif; ?>
 
-    <p><a href="<?php echo $base_url; ?>/chat.php">Falar com Suporte</a></p>
-    <p><a href="<?php echo $base_url; ?>/logout.php">Sair</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/chat.php">Falar com Suporte</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/logout.php">Sair</a></p>
 </body>
 </html>
