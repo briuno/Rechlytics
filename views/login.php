@@ -8,19 +8,6 @@ unset($_SESSION['erro_login']);
 <head>
     <meta charset="UTF-8">
     <title>Login – Rechlytics</title>
-    <style>
-        /* Estilo simples para ilustrar */
-        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-        .container { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,.1); }
-        h2 { margin-bottom: 16px; }
-        .erro { color: #c00; margin-bottom: 12px; }
-        input, button { width: 100%; padding: 8px; margin: 6px 0 12px; border-radius: 4px; }
-        input { border: 1px solid #ccc; }
-        button { background: #007BFF; color: #fff; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        a { color: #007BFF; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -40,7 +27,7 @@ unset($_SESSION['erro_login']);
             <button type="submit" name="login">Entrar</button>
         </form>
 
-        <p style="margin-top: 12px;">
+        <p>
             <a href="auth/esq_senha.php">Esqueci minha senha</a>
         </p>
     </div>

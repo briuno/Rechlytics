@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php
     if (isset($_SESSION['msg'])) {
-        echo "<p style='color: green;'>" . htmlspecialchars($_SESSION['msg']) . "</p>";
+        echo "<p>" . htmlspecialchars($_SESSION['msg']) . "</p>";
         unset($_SESSION['msg']);
     }
     ?>

@@ -20,15 +20,15 @@ if (isset($_GET['email']) && isset($_GET['token'])) {
         $stmt->bind_param("s", $email);
 
         if ($stmt->execute()) {
-            echo "<p style='color: green;'>Conta ativada com sucesso! Agora você pode fazer <a href='$base_url/views/login.php'>login</a>.</p>";
+            echo "<p>Conta ativada com sucesso! Agora você pode fazer <a href='$base_url/views/login.php'>login</a>.</p>";
         } else {
-            echo "<p style='color: red;'>Erro ao ativar a conta. Tente novamente mais tarde.</p>";
+            echo "<p>Erro ao ativar a conta. Tente novamente mais tarde.</p>";
         }
     } else {
-        echo "<p style='color: red;'>Link de ativação inválido ou expirado.</p>";
+        echo "<p>Link de ativação inválido ou expirado.</p>";
     }
 } else {
-    echo "<p style='color: red;'>Link de ativação inválido.</p>";
+    echo "<p>Link de ativação inválido.</p>";
 }
 ?>
 
