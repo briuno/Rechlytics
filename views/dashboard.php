@@ -34,7 +34,7 @@ $result = $stmt->get_result();
 </head>
 <body>
     <h2>Bem-vindo, <?php echo $usuario_nome; ?>!</h2>
-    <p><a href="<?php echo $base_url; ?>/perfil.php">Editar Perfil</a></p>
+    <p><a href="<?php echo $base_url; ?>/views/perfil.php">Editar Perfil</a></p>
 
     <h3>Seus Dashboards</h3>
 
