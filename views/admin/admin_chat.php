@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $cliente_id) {
     <title>Gestão de Chat – Rechlytics</title>
 </head>
 <body>
-    <h2>Gestão de Chat</h2>
+    <h2 class="page-title">Gestão de Chat</h2>
 
     <h3>Selecionar Cliente:</h3>
     <ul>

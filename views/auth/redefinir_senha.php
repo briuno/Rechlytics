@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Redefinir Senha - Rechlytics</title>
 </head>
 <body>
-    <h2>🔑 Redefinir Senha</h2>
+    <h2 class="page-title">🔑 Redefinir Senha</h2>
 
     <?php
     if (isset($_SESSION['msg'])) {

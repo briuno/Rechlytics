@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Editar Usuário – Rechlytics</title>
 </head>
 <body>
-    <h2>Editar Usuário</h2>
+    <h2 class="page-title">Editar Usuário</h2>
 
     <?php if (isset($_SESSION['msg'])): ?>
         <p><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>

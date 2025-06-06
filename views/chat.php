@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Chat com Suporte – Rechlytics</title>
 </head>
 <body>
-    <h2>Chat com Suporte</h2>
+    <h2 class="page-title">Chat com Suporte</h2>
 
     <!-- 3. Exibição do histórico -->
     <div id="chat-box">

@@ -13,7 +13,7 @@ unset($_SESSION['erro_login']);
 </head>
 <body>
     <div class="container">
-        <h2>Login – Rechlytics</h2>
+        <h2 class="page-title">Login – Rechlytics</h2>
 
         <?php if ($mensagem_erro): ?>
             <div class="erro"><?php echo htmlspecialchars($mensagem_erro); ?></div>

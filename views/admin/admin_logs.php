@@ -74,7 +74,7 @@ $result = $stmt->get_result();
     <title>Auditoria de Logs – Rechlytics</title>
 </head>
 <body>
-    <h2>Auditoria de Logs</h2>
+    <h2 class="page-title">Auditoria de Logs</h2>
 
     <form method="GET">
         <!-- Filtro por Usuário -->
