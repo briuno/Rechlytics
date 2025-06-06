@@ -19,7 +19,7 @@ unset($_SESSION['erro_login']);
             <div class="erro"><?php echo htmlspecialchars($mensagem_erro); ?></div>
         <?php endif; ?>
 
-        <form action="../controllers/auth.php" method="POST">
+        <form action="../controllers/auth.php" method="POST" class="form-auth">
             <label for="email">E-mail:</label>
             <input type="email" id="email" name="email" required autocomplete="off">
 

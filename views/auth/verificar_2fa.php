@@ -25,7 +25,7 @@ unset($_SESSION['erro_2fa']);
         <?php endif; ?>
 
         <!-- Aqui está a correção: subimos dois níveis para chegar em controllers/validar_2fa.php -->
-        <form action="../../controllers/validar_2fa.php" method="POST">
+        <form action="../../controllers/validar_2fa.php" method="POST" class="form-auth">
             <label for="codigo_2fa">Código 2FA:</label>
             <input type="text" id="codigo_2fa" name="codigo_2fa" required pattern="\d{6}"
                    title="Insira o código de 6 dígitos enviado por e-mail">
