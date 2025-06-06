@@ -11,7 +11,9 @@ unset($_SESSION['erro_2fa']);
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+    <link rel="stylesheet" href="../../public/css/estilos.css">
+    <script src="../../public/js/script.js" defer></script>
     <title>Verificação 2FA – Rechlytics</title>
 </head>
 <body>

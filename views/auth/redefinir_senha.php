@@ -107,7 +107,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+    <link rel="stylesheet" href="../../public/css/estilos.css">
+    <script src="../../public/js/script.js" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redefinir Senha - Rechlytics</title>
 </head>

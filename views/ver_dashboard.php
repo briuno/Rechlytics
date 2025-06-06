@@ -30,7 +30,9 @@ $row = $result->fetch_assoc();
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+    <link rel="stylesheet" href="../public/css/estilos.css">
+    <script src="../public/js/script.js" defer></script>
     <title><?php echo htmlspecialchars($row['nome']); ?> - Rechlytics</title>
 </head>
 <body>
