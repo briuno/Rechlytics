@@ -95,53 +95,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $cliente_id) {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../../public/css/estilos.css">
+    <script src="../../public/js/script.js" defer></script>
     <title>Gestão de Chat – Rechlytics</title>
-    <style>
-        /* Estilização mínima */
-        #chat-box {
-            max-height: 500px;
-            overflow-y: auto;
-            border: 1px solid #CCC;
-            padding: 10px;
-            background-color: #F9F9F9;
-            margin-bottom: 20px;
-        }
-        .msg-cliente {
-            display: flex;
-            justify-content: flex-end;
-            margin: 8px 0;
-        }
-        .msg-suporte {
-            display: flex;
-            justify-content: flex-start;
-            margin: 8px 0;
-        }
-        .msg-conteudo {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 8px;
-            max-width: 70%;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-        .msg-cliente .msg-conteudo {
-            background-color: #D4EFDF; /* Verde claro */
-        }
-        .msg-suporte .msg-conteudo {
-            background-color: #FFFFFF; /* Branco */
-            border: 1px solid #DDD;
-        }
-        .msg-data {
-            font-size: 12px;
-            color: #777;
-            margin-top: 2px;
-            text-align: right;
-        }
-        .pendencia > a {
-            color: #C0392B; /* Vermelho corporativo */
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
     <h2>Gestão de Chat</h2>

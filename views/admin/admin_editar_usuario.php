@@ -110,34 +110,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../../public/css/estilos.css">
+    <script src="../../public/js/script.js" defer></script>
     <title>Editar Usuário – Rechlytics</title>
-    <style>
-        /* Estilização mínima para apresentação */
-        form { margin-bottom: 20px; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input[type="text"], input[type="email"], textarea {
-            width: 400px;
-            padding: 6px;
-            border: 1px solid #CCC;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        textarea { height: 80px; resize: vertical; }
-        button {
-            margin-top: 12px;
-            padding: 8px 16px;
-            background-color: #2C3E50;
-            color: #FFF;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover { background-color: #1A252F; }
-        .info { margin-top: 20px; padding: 10px; border: 1px solid #DDD; background-color: #F9F9F9; }
-        .dash-list { margin-top: 10px; }
-        .dash-item { margin-bottom: 8px; }
-        .label-small { font-size: 13px; color: #555; }
-    </style>
 </head>
 <body>
     <h2>Editar Usuário</h2>

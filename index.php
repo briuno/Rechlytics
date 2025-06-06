@@ -4,7 +4,9 @@ $base_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . dirname
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+    <link rel="stylesheet" href="public/css/estilos.css">
+    <script src="public/js/script.js" defer></script>
     <title>Rechlytics - Página Inicial</title>
 </head>
 <body>

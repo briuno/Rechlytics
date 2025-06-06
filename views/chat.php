@@ -61,45 +61,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../public/css/estilos.css">
+    <script src="../public/js/script.js" defer></script>
     <title>Chat com Suporte – Rechlytics</title>
-    <style>
-        /* Estilização básica para diferenciar remetentes */
-        #chat-box {
-            max-height: 500px;
-            overflow-y: auto;
-            border: 1px solid #CCC;
-            padding: 10px;
-            margin-bottom: 20px;
-            background-color: #F9F9F9;
-        }
-        .msg-cliente {
-            text-align: right;
-            margin: 8px 0;
-        }
-        .msg-suporte {
-            text-align: left;
-            margin: 8px 0;
-        }
-        .msg-conteudo {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 8px;
-            max-width: 70%;
-            font-size: 14px;
-        }
-        .msg-cliente .msg-conteudo {
-            background-color: #DCF8C6;
-        }
-        .msg-suporte .msg-conteudo {
-            background-color: #FFFFFF;
-            border: 1px solid #DDD;
-        }
-        .msg-data {
-            font-size: 12px;
-            color: #777;
-            margin-top: 2px;
-        }
-    </style>
 </head>
 <body>
     <h2>Chat com Suporte</h2>
