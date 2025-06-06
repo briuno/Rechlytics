@@ -18,7 +18,7 @@ unset($_SESSION['erro_2fa']);
 </head>
 <body>
     <div class="container">
-        <h2>Digite seu Código 2FA</h2>
+        <h2 class="page-title">Digite seu Código 2FA</h2>
 
         <?php if ($mensagem_erro): ?>
             <div class="erro"><?php echo htmlspecialchars($mensagem_erro); ?></div>

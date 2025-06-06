@@ -32,7 +32,7 @@ $result = $stmt->get_result();
     <title>Painel Administrativo - Rechlytics</title>
 </head>
 <body>
-    <h2>Painel Administrativo</h2>
+    <h2 class="page-title">Painel Administrativo</h2>
     <h3>Usuários Cadastrados</h3>
 
     <?php if ($result->num_rows > 0): ?>

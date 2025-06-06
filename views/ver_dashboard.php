@@ -36,7 +36,7 @@ $row = $result->fetch_assoc();
     <title><?php echo htmlspecialchars($row['nome']); ?> - Rechlytics</title>
 </head>
 <body>
-    <h2><?php echo htmlspecialchars($row['nome']); ?></h2>
+    <h2 class="page-title"><?php echo htmlspecialchars($row['nome']); ?></h2>
     <iframe src="<?php echo htmlspecialchars($row['url']); ?>" width="100%" height="600px"></iframe>
     <p><a href="<?php echo $base_url; ?>/views/dashboard.php">Voltar</a></p>
 </body>

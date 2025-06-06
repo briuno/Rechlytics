@@ -81,7 +81,7 @@ $result = $conn->query(
     <title>Gerenciar Dashboards – Rechlytics</title>
 </head>
 <body>
-    <h2>Gerenciar Dashboards</h2>
+    <h2 class="page-title">Gerenciar Dashboards</h2>
 
     <form action="<?php echo $base_url; ?>/views/admin/admin_dashboards.php" method="POST">
         <input type="hidden" name="dashboard_id" id="dashboard_id">

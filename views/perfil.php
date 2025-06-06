@@ -52,7 +52,7 @@ $stmt->fetch();
     <title>Meu Perfil - Rechlytics</title>
 </head>
 <body>
-    <h2>Meu Perfil</h2>
+    <h2 class="page-title">Meu Perfil</h2>
 
     <?php if (isset($_SESSION['msg'])): ?>
         <p><?php echo $_SESSION['msg']; unset($_SESSION['msg']); ?></p>

@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Cadastro - Rechlytics</title>
 </head>
 <body>
-    <h2>Cadastro</h2>
+    <h2 class="page-title">Cadastro</h2>
 
     <?php
     if (isset($_SESSION['msg'])) {
