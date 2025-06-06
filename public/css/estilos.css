@@ -1,6 +1,7 @@
 /* ================================
    RESET & BASE
    ================================ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +14,7 @@ html {
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', Arial, sans-serif;
     background-color: #f4f4f4;
     color: #333;
     line-height: 1.6;
@@ -473,7 +474,50 @@ body {
         text-align: center;
     }
 
-    .footer-col {
+.footer-col {
         margin-bottom: 2rem;
     }
+}
+
+/* ================================
+   10. FORMULÁRIOS
+   ================================ */
+.form-auth {
+    max-width: 400px;
+    margin: 2rem auto;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-auth label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.form-auth input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.form-auth button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.form-auth button:hover {
+    background-color: #0056b3;
 }
