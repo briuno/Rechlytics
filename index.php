@@ -15,11 +15,18 @@
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3099/3099237.png" type="image/png">
 
     <!-- CSS principal -->
-    <link rel="stylesheet" href="<?php echo $base_url; ?>/css/estilos.css">
-    <!-- JS principal (contém apenas lógica de fade-out de erros e toggle de menu) -->
-    <script src="<?php echo $base_url; ?>/js/script.js" defer></script>
+   <link rel="stylesheet" href="public/css/index.css">
+   <!-- JS principal (contém apenas lógica de fade-out de erros e toggle de menu) -->
+   <script src="public/js/script.js" defer></script>
+
 </head>
 <body>
+    
+    <!-- ================================
+    HERO SECTION
+    ================================ -->
+    
+<section class="hero">
     <!-- ================================
          HEADER / NAVBAR
          ================================ -->
@@ -27,7 +34,7 @@
         <div class="header-container">
             <a href="<?php echo $base_url; ?>" class="logo">
                 <!-- Usando ícone de BI do Flaticon (URL externa) -->
-                <img src="https://cdn-icons-png.flaticon.com/512/3099/3099237.png" alt="Rechlytics Logo">
+                <img src="public/assets/images/logo.png" alt="Rechlytics Logo">
             </a>
             <nav class="nav">
                 <ul class="nav-list">
@@ -43,25 +50,22 @@
             </nav>
         </div>
     </header>
+    
+<!-- Conteúdo -->
+  <div class="hero-content container">
+    <h1 class="hero-title">Rechlytics</h1>
+    <p class="hero-subtitle">
+      Plataforma Web para disponibilizar dashboards interativos do Power BI de forma segura e eficiente.
+    </p>
+    <a href="<?php echo $base_url; ?>/views/cadastro.php" class="btn-hero">Comece Agora</a>
+  </div>
+</section>
 
-    <!-- ================================
-         HERO SECTION
-         ================================ -->
-    <section class="hero">
-        <div class="hero-overlay"></div>
-        <div class="hero-content container">
-            <h1 class="hero-title">Rechlytics</h1>
-            <p class="hero-subtitle">
-                Plataforma Web para disponibilizar dashboards interativos do Power BI de forma segura e eficiente.
-            </p>
-            <a href="<?php echo $base_url; ?>/views/cadastro.php" class="btn-hero">Comece Agora</a>
-        </div>
-    </section>
 
     <!-- ================================
          SEÇÃO SOBRE
          ================================ -->
-    <section id="sobre" class="sobre section container">
+    <section id="sobre" class="sobre-section-container">
         <div class="section-header">
             <h2>Sobre o Rechlytics</h2>
         </div>
@@ -160,8 +164,8 @@
         </div>
         <div class="footer-bottom">
             <p>© 2025 Rechlytics. Todos os direitos reservados.</p>
+
         </div>
     </footer>
 </body>
 </html>
-teste

@@ -67,12 +67,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-    <link rel="stylesheet" href="../public/css/estilos.css">
+    <link rel="stylesheet" href="../public/css/cadastro.css">
     <script src="../public/js/script.js" defer></script>
     <title>Cadastro - Rechlytics</title>
 </head>
 <body>
-    <h2 class="page-title">Cadastro</h2>
+
+<div class="header">
+    
+
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" class="form-auth">
+        <h2 class="page-title">Cadastro</h2>
 
     <?php
     if (isset($_SESSION['msg'])) {
@@ -80,35 +85,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset($_SESSION['msg']);
     }
     ?>
-
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" class="form-auth">
+    
         <label>Nome:</label>
-        <input type="text" name="nome" required>
+        <input type="text" name="nome" placeholder="Digite seu nome completo" required>
 
         <label>Email:</label>
-        <input type="text" name="email" required>
+        <input type="text" name="email" placeholder="exemplo@dominio.com" required>
 
         <label>CPF:</label>
-        <input type="text" name="cpf" required>
+        <input type="text" name="cpf" placeholder="000.000.000-00" required>
 
         <label>Telefone:</label>
-        <input type="text" name="telefone" required>
+        <input type="text" name="telefone" placeholder="(00) 00000-0000" required>
 
         <label>Endereço:</label>
-        <input type="text" name="endereco" required>
+        <input type="text" name="endereco" placeholder="Rua, número, bairro" required>
 
         <label>Empresa:</label>
-        <input type="text" name="empresa" required>
+        <input type="text" name="empresa" placeholder="Nome da empresa" required>
 
         <label>Senha:</label>
-        <input type="password" name="senha" required minlength="8">
+        <input type="password" name="senha" placeholder="Sua senha" required minlength="8">
 
-        <label>Confirma Senha:</label>
-        <input type="password" name="confirma_senha" required minlength="8">
+        <label>Confirme sua senha:</label>
+        <input type="password" name="confirma_senha" placeholder="Confirme sua senha" required minlength="8">
 
-        <button type="submit">Cadastrar</button>
+        <button type="submit" class="button-cadastrar">Cadastrar</button>
     </form>
 
-    <p><a href="<?php echo $base_url; ?>/views/login.php">Já tem uma conta? Faça login</a></p>
+
+    <div class="part-two">
+            <h2>
+            Já tem uma conta?
+            <a href="<?php echo $base_url; ?>/views/login.php" class="btn-login">Login</a>
+            </h2>
+        </div>
+</div>
+
+
 </body>
 </html>

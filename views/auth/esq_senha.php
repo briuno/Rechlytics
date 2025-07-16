@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-    <link rel="stylesheet" href="../../public/css/estilos.css">
+    <link rel="stylesheet" href="../../public/css/esqueciSenha.css">
     <script src="../../public/js/script.js" defer></script>
     <title>Esqueci Minha Senha - Rechlytics</title>
 </head>
@@ -120,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" class="form-auth">
         <label>Email:</label>
-        <input type="email" name="email" required>
+        <input type="email" placeholder="exemplo@dominio.com" name="email" required>
         <button type="submit">Enviar Link</button>
     </form>
     <p><a href="<?php echo $base_url; ?>/login.php">Voltar ao Login</a></p>

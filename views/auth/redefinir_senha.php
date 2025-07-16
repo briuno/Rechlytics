@@ -108,13 +108,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-    <link rel="stylesheet" href="../../public/css/estilos.css">
+    <link rel="stylesheet" href="../../public/css/redefinirSenha.css">
     <script src="../../public/js/script.js" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redefinir Senha - Rechlytics</title>
 </head>
 <body>
-    <h2 class="page-title">🔑 Redefinir Senha</h2>
+    <h2 class="page-title">Redefinir Senha</h2>
 
     <?php
     if (isset($_SESSION['msg'])) {
@@ -125,14 +125,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?token=' . urlencode($token); ?>" method="POST" class="form-auth">
         <label>Nova Senha:</label>
-        <input type="password" name="senha" required minlength="8">
+        <input type="password" name="senha" placeholder="Digite sua nova senha" required minlength="8">
 
         <label>Confirme a Senha:</label>
-        <input type="password" name="confirma_senha" required minlength="8">
+        <input type="password" name="confirma_senha" placeholder="Confirme sua nova senha" required minlength="8">
 
         <button type="submit">Redefinir Senha</button>
     </form>
 
-    <p><a href="<?php echo $base_url; ?>/login.php">🔙 Voltar ao Login</a></p>
+    <p><a href="<?php echo $base_url; ?>/login.php">Voltar ao Login</a></p>
 </body>
 </html>

@@ -30,7 +30,7 @@ $result = $stmt->get_result();
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-    <link rel="stylesheet" href="../public/css/estilos.css">
+    <link rel="stylesheet" href="../public/css/dashboard.css">
     <script src="../public/js/script.js" defer></script>
     <title>Dashboard - Rechlytics</title>
 </head>

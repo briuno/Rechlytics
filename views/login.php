@@ -7,7 +7,7 @@ unset($_SESSION['erro_login']);
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-    <link rel="stylesheet" href="../public/css/estilos.css">
+    <link rel="stylesheet" href="../public/css/login.css">
     <script src="../public/js/script.js" defer></script>
     <title>Login – Rechlytics</title>
 </head>
@@ -21,10 +21,10 @@ unset($_SESSION['erro_login']);
 
         <form action="../controllers/auth.php" method="POST" class="form-auth">
             <label for="email">E-mail:</label>
-            <input type="email" id="email" name="email" required autocomplete="off">
+            <input type="email" id="email" name="email" placeholder="exemplo@dominio.com" required autocomplete="off">
 
             <label for="senha">Senha:</label>
-            <input type="password" id="senha" name="senha" required minlength="8" autocomplete="off">
+            <input type="password" id="senha" name="senha" placeholder="Sua senha" required minlength="8" autocomplete="off">
 
             <button type="submit" name="login">Entrar</button>
         </form>

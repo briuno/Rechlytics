@@ -12,7 +12,7 @@ unset($_SESSION['erro_2fa']);
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-    <link rel="stylesheet" href="../../public/css/estilos.css">
+    <link rel="stylesheet" href="../../public/css/doisFatores.css">
     <script src="../../public/js/script.js" defer></script>
     <title>Verificação 2FA – Rechlytics</title>
 </head>
@@ -27,7 +27,7 @@ unset($_SESSION['erro_2fa']);
         <!-- Aqui está a correção: subimos dois níveis para chegar em controllers/validar_2fa.php -->
         <form action="../../controllers/validar_2fa.php" method="POST" class="form-auth">
             <label for="codigo_2fa">Código 2FA:</label>
-            <input type="text" id="codigo_2fa" name="codigo_2fa" required pattern="\d{6}"
+            <input type="text" id="codigo_2fa" name="codigo_2fa" placeholder="******" required pattern="\d{6}"
                    title="Insira o código de 6 dígitos enviado por e-mail">
 
             <button type="submit" name="verificar_2fa">Verificar</button>
