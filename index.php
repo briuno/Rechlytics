@@ -12,7 +12,7 @@
     <title>Rechlytics – Dashboards Power BI Interativos</title>
 
     <!-- Favicon (pode apontar para uma URL externa ou local opcional) -->
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3099/3099237.png" type="image/png">
+    <link rel="icon" href="public/assets/images/logo.png" type="image/png">
 
     <!-- CSS principal -->
    <link rel="stylesheet" href="public/css/index.css">

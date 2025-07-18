@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("ssssssss", $nome, $email, $senha_hash, $cpf, $telefone, $endereco, $empresa, $token);
 
     if ($stmt->execute()) {
-        $usuario_id = $stmt->insert_id;
+        $usuario_id = $stmt->insert_id;he3awc a 
         registrarLog($conn, $usuario_id, 'Novo usuário cadastrado');
 
         $ativacao_link = "$base_url/views/auth/ativar_conta.php?email=$email&token=$token";
